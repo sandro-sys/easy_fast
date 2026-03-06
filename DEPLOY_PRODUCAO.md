@@ -108,13 +108,14 @@ Você vai usar esses dois valores na Vercel na etapa 3.
 
 Isso cria as tabelas `reservations`, `settings`, `closed_dates` e `plans`, com permissões (RLS) para usuários autenticados.
 
+**Empresas e painel master (opcional):** Se quiser cadastro de empresas e painel admin, no SQL Editor execute também o conteúdo de **`supabase/schema-companies.sql`** (cria tabela `companies`, coluna `company_id` em reservas e função para o usuário master).
+
 ### 2.4 Autenticação por e-mail
 
-1. Vá em **Authentication** → **Providers**.
+1. Vá em **Authentication** → **Sign In / Providers**.
 2. Deixe **Email** habilitado.
-3. (Opcional) Em **Email**, ajuste **Confirm email**:
-   - Ligado: usuário precisa confirmar o e-mail antes de usar.
-   - Desligado: útil para testar logo sem confirmação.
+3. Para **não** exigir confirmação de e-mail (acesso imediato após cadastro), desative **Confirm email**.
+4. Salve as alterações.
 
 ### 2.5 (Opcional) URL de redirecionamento após deploy
 

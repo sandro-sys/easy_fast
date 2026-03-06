@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-
 export async function getSettings() {
   const supabase = await createClient();
   if (!supabase) return null;
@@ -18,7 +17,10 @@ export async function setReservationLimit(limit: number) {
   if (!supabase) return { error: "Supabase não configurado" };
   const { error } = await supabase
     .from("settings")
-    .upsert({ key: "reservation_limit_per_slot", value: limit, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    .upsert(
+      { key: "reservation_limit_per_slot", value: String(limit), updated_at: new Date().toISOString() },
+      { onConflict: "key" }
+    );
 
   if (error) return { error: error.message };
   revalidatePath("/configuracoes");
@@ -46,4 +48,14 @@ export async function removeClosedDate(id: string) {
   revalidatePath("/configuracoes");
   revalidatePath("/reservas");
   return { error: null };
+}
+
+export async function getClosedDates(): Promise<{ id: string; date: string; reason: string | null }[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("closed_dates")
+    .select("id, date, reason")
+    .order("date", { ascending: false });
+  return (data ?? []).map(({ id, date, reason }) => ({ id, date, reason }));
 }

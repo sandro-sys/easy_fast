@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { createClient } from "@/lib/supabase/server";
+import { isMasterUser } from "@/lib/auth-utils";
 
 export const metadata: Metadata = {
   title: "Easy & Fast - Gestão de Reservas para Restaurante",
@@ -24,12 +25,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const userEmail = await getUserEmail();
+  const isMaster = isMasterUser(userEmail);
 
   return (
     <html lang="pt-BR">
       <body className="min-h-screen bg-[var(--bg)] text-[var(--text)] antialiased">
         <div className="flex min-h-screen flex-col">
-          <Header userEmail={userEmail} />
+          <Header userEmail={userEmail} isMaster={isMaster} />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>

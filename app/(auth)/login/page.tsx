@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { APP_NAME, APP_TAGLINE } from "@/lib/app-config";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -89,12 +90,10 @@ export default function LoginPage() {
           <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-300">
             Senha
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input-field"
+            onChange={setPassword}
             required
           />
         </div>

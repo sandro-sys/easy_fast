@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { APP_NAME, APP_TAGLINE } from "@/lib/app-config";
+import { PasswordInput } from "@/components/PasswordInput";
+import { validatePasswordStrength } from "@/lib/auth-utils";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -39,6 +41,11 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    const passwordCheck = validatePasswordStrength(password);
+    if (!passwordCheck.valid) {
+      setError(passwordCheck.message ?? "Senha inválida.");
+      return;
+    }
     setLoading(true);
     if (!supabase) {
       setLoading(false);
@@ -48,14 +55,16 @@ export default function RegisterPage() {
     const { error: signError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/onboarding`,
+      },
     });
     setLoading(false);
     if (signError) {
       setError(signError.message);
       return;
     }
-    router.push("/dashboard");
+    router.push("/onboarding");
     router.refresh();
   }
 
@@ -90,15 +99,16 @@ export default function RegisterPage() {
           <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-300">
             Senha
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input-field"
-            minLength={6}
+            onChange={setPassword}
+            minLength={8}
             required
           />
+          <p className="mt-1 text-xs text-slate-500">
+            Mín. 8 caracteres, com maiúsculas, minúsculas, números e caracteres especiais.
+          </p>
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button

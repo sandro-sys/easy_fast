@@ -4,9 +4,10 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/app-config";
 
 interface HeaderProps {
   userEmail?: string | null;
+  isMaster?: boolean;
 }
 
-export function Header({ userEmail }: HeaderProps) {
+export function Header({ userEmail, isMaster }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 border-b border-white/10 bg-[#171A1E]">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
@@ -29,6 +30,14 @@ export function Header({ userEmail }: HeaderProps) {
           </Link>
           {userEmail ? (
             <>
+              {isMaster && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-[#F98F29] hover:text-[#ffa347] transition-colors"
+                >
+                  Painel master
+                </Link>
+              )}
               <Link
                 href="/dashboard"
                 className="text-sm font-medium text-slate-300 hover:text-[#32C76A] transition-colors"

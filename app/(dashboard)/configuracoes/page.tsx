@@ -1,16 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
-import { getSettings, setReservationLimit, addClosedDate, removeClosedDate } from "@/app/actions/settings";
+import { getSettings, setReservationLimit, addClosedDate, removeClosedDate, getClosedDates } from "@/app/actions/settings";
 import { SettingsForm } from "@/components/SettingsForm";
 import { ClosedDatesList } from "@/components/ClosedDatesList";
 
 export default async function ConfiguracoesPage() {
-  const supabase = await createClient();
   const settings = await getSettings();
   const limit = Number(settings?.reservation_limit_per_slot ?? 10);
-
-  const closedDates = supabase
-    ? (await supabase.from("closed_dates").select("*").order("date", { ascending: false })).data ?? []
-    : [];
+  const closedDates = await getClosedDates();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
