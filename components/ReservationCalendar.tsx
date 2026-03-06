@@ -123,7 +123,7 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
         <DayPicker
           mode="single"
           selected={selectedDate ?? undefined}
-          onSelect={setSelectedDate}
+          onSelect={(date) => setSelectedDate(date ?? null)}
           disabled={disabledDays}
           locale={ptBR}
           className="rdp-reservation"
