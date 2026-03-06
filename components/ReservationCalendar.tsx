@@ -127,6 +127,7 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
           disabled={disabledDays}
           locale={ptBR}
           className="rdp-reservation"
+          required={false}
         />
       </div>
 
