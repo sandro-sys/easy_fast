@@ -40,6 +40,11 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    if (!supabase) {
+      setLoading(false);
+      setError("Supabase não configurado");
+      return;
+    }
     const { error: signError } = await supabase.auth.signInWithPassword({
       email,
       password,
