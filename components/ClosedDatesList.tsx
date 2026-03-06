@@ -13,7 +13,7 @@ interface ClosedDate {
 interface ClosedDatesListProps {
   closedDates: ClosedDate[];
   addClosedDate: (date: string, reason: string) => Promise<{ error: string | null }>;
-  removeClosedDate: (id: string) => Promise<void>;
+  removeClosedDate: (id: string) => Promise<{ error: string | null }>;
 }
 
 export function ClosedDatesList({
@@ -78,7 +78,11 @@ export function ClosedDatesList({
             )}
             <button
               type="button"
-              onClick={() => removeClosedDate(d.id)}
+              onClick={async () => {
+                setError("");
+                const result = await removeClosedDate(d.id);
+                if (result?.error) setError(result.error);
+              }}
               className="text-sm text-red-400 hover:underline"
             >
               Remover
