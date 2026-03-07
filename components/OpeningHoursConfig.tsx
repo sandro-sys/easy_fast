@@ -29,6 +29,7 @@ export function OpeningHoursConfig() {
   const [overrideOpen, setOverrideOpen] = useState("12:00");
   const [overrideClose, setOverrideClose] = useState("23:00");
   const [error, setError] = useState("");
+  const [replicatePromptDay, setReplicatePromptDay] = useState<number | null>(null);
 
   const dayNames = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
@@ -47,7 +48,28 @@ export function OpeningHoursConfig() {
   }
 
   function updateDay(dayIndex: number, value: DayHours) {
-    setWeeklyHoursState((prev) => ({ ...prev, [String(dayIndex)]: value }));
+    setWeeklyHoursState((prev) => {
+      const next = { ...prev, [String(dayIndex)]: value };
+      if (value !== null) {
+        const outrosDiasAbertos = [0, 1, 2, 3, 4, 5, 6]
+          .filter((i) => i !== dayIndex)
+          .some((i) => prev[String(i)] != null);
+        if (!outrosDiasAbertos) setReplicatePromptDay(dayIndex);
+      }
+      return next;
+    });
+  }
+
+  function handleReplicate(sim: boolean) {
+    if (sim && replicatePromptDay !== null) {
+      const source = weeklyHours[String(replicatePromptDay)];
+      if (source && "open" in source && "close" in source) {
+        const next: WeeklyHours = {};
+        for (let i = 0; i <= 6; i++) next[String(i)] = { open: source.open, close: source.close };
+        setWeeklyHoursState(next);
+      }
+    }
+    setReplicatePromptDay(null);
   }
 
   async function handleAddClosed(e: React.FormEvent) {
@@ -140,6 +162,30 @@ export function OpeningHoursConfig() {
                 );
               })}
             </div>
+            {replicatePromptDay !== null && weeklyHours[String(replicatePromptDay)] && (
+              <div className="mt-4 rounded-xl border border-[#32C76A]/40 bg-[#32C76A]/10 p-4">
+                <p className="text-sm font-medium text-slate-200">
+                  Replicar os horários de <strong>{dayNames[replicatePromptDay]}</strong> para os demais dias?
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleReplicate(true)}
+                    className="rounded-xl bg-[#32C76A] px-4 py-2 text-sm font-medium text-white hover:bg-[#2ab55d]"
+                  >
+                    Sim, replicar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleReplicate(false)}
+                    className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/20"
+                  >
+                    Não
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={handleSaveWeekly}
