@@ -33,9 +33,10 @@ function generateTimeSlots(open: string, close: string): string[] {
 interface ReservationCalendarProps {
   limitPerSlot: number;
   closedDates: string[];
+  companyWhatsapp?: string | null;
 }
 
-export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCalendarProps) {
+export function ReservationCalendar({ limitPerSlot, closedDates, companyWhatsapp }: ReservationCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [guestName, setGuestName] = useState("");
@@ -220,10 +221,22 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
             </p>
           )}
 
+          {!selectedDate && (
+            <p className="mt-4 text-sm text-amber-400/90">
+              Selecione uma data no calendário à esquerda.
+            </p>
+          )}
+          {selectedDate && !selectedTime && (
+            <p className="mt-4 text-sm text-amber-400/90">
+              Selecione um horário na lista acima (ex.: 12:00, 12:30) para ativar o botão.
+            </p>
+          )}
+
           <button
             type="submit"
             disabled={loading || !selectedDate || !selectedTime}
-            className="btn-reservation mt-6 w-full rounded-xl py-3.5 text-base font-semibold transition disabled:opacity-50"
+            className="btn-reservation mt-6 w-full rounded-xl py-3.5 text-base font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            title={!selectedDate ? "Selecione uma data" : !selectedTime ? "Selecione um horário" : undefined}
           >
             {loading ? "Salvando…" : "Concluir reserva"}
           </button>
@@ -236,6 +249,7 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
       {successData && (
         <WhatsAppModal
           data={successData}
+          companyWhatsapp={companyWhatsapp ?? null}
           onClose={() => setSuccessData(null)}
         />
       )}

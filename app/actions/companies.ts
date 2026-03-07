@@ -33,7 +33,7 @@ export async function createCompany(data: CompanyInput) {
   return { error: null };
 }
 
-export async function getMyCompany(): Promise<{ id: string; name: string } | null> {
+export async function getMyCompany(): Promise<{ id: string; name: string; whatsapp_number?: string | null } | null> {
   const supabase = await createClient();
   if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
@@ -41,7 +41,7 @@ export async function getMyCompany(): Promise<{ id: string; name: string } | nul
 
   const { data } = await supabase
     .from("companies")
-    .select("id, name")
+    .select("id, name, whatsapp_number")
     .eq("owner_id", user.id)
     .single();
   return data ?? null;

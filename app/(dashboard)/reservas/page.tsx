@@ -1,4 +1,5 @@
 import { getSettings, getClosedDates } from "@/app/actions/settings";
+import { getMyCompany } from "@/app/actions/companies";
 import { ReservationCalendar } from "@/components/ReservationCalendar";
 
 export default async function ReservasPage() {
@@ -6,6 +7,8 @@ export default async function ReservasPage() {
   const limit = Number(settings?.reservation_limit_per_slot ?? 10);
   const closedDatesList = await getClosedDates();
   const closedDates = closedDatesList.map((d) => d.date);
+  const company = await getMyCompany();
+  const companyWhatsapp = company?.whatsapp_number ?? null;
 
   return (
     <div className="mx-auto max-w-[90rem] px-4 py-8">
@@ -20,6 +23,7 @@ export default async function ReservasPage() {
       <ReservationCalendar
         limitPerSlot={limit}
         closedDates={closedDates}
+        companyWhatsapp={companyWhatsapp}
       />
     </div>
   );
