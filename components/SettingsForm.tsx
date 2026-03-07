@@ -19,7 +19,7 @@ export function SettingsForm({ initialLimit, setReservationLimit }: SettingsForm
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card mt-6">
+    <form onSubmit={handleSubmit} className="card-soft">
       <h3 className="font-semibold text-[#32C76A]">Limite de reservas por horário</h3>
       <p className="mt-1 text-sm text-slate-400">
         Número máximo de reservas permitidas em um mesmo horário.

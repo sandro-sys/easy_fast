@@ -4,7 +4,6 @@ import { useState, useMemo, useCallback } from "react";
 import { DayPicker } from "react-day-picker";
 import { format, isBefore, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Calendar, Clock, User, Phone, MessageSquare } from "lucide-react";
 import "react-day-picker/style.css";
 import { createReservation } from "@/app/actions/reservations";
 import { WhatsAppModal } from "./WhatsAppModal";
@@ -113,11 +112,8 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
   return (
     <div className="mt-8 flex flex-col gap-8 lg:flex-row">
       {/* Calendário */}
-      <div className="reservation-calendar-card shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-[#22252a] p-5">
-        <div className="mb-4 flex items-center gap-2 border-b border-white/10 pb-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#32C76A]/20">
-            <Calendar className="h-5 w-5 text-[#32C76A]" />
-          </div>
+      <div className="card-soft reservation-calendar-card shrink-0 overflow-hidden p-5">
+        <div className="mb-4 border-b border-white/10 pb-3">
           <span className="font-semibold text-white">Escolha a data</span>
         </div>
         <DayPicker
@@ -134,11 +130,8 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
       {/* Horários + Formulário */}
       <div className="flex flex-1 flex-col gap-6">
         {selectedDate && (
-          <div className="rounded-2xl border border-white/10 bg-[#22252a] p-5">
-            <div className="mb-3 flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#32C76A]/20">
-                <Clock className="h-5 w-5 text-[#32C76A]" />
-              </div>
+          <div className="card-soft p-5">
+            <div className="mb-3">
               <span className="font-semibold text-white">
                 Horário para {format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR })}
               </span>
@@ -164,19 +157,15 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
 
         <form
           onSubmit={handleSubmit}
-          className="reservation-form-card rounded-2xl border border-white/10 bg-[#22252a] p-6"
+          className="card-soft reservation-form-card min-w-0 w-full max-w-3xl p-6"
         >
-          <div className="mb-6 flex items-center gap-2 border-b border-white/10 pb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#32C76A]/20">
-              <User className="h-5 w-5 text-[#32C76A]" />
-            </div>
+          <div className="mb-6 border-b border-white/10 pb-4">
             <h3 className="text-lg font-semibold text-white">Dados da reserva</h3>
           </div>
 
           <div className="space-y-5">
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-300">
-                <User className="h-4 w-4 text-slate-500" />
+              <label className="mb-1.5 block text-sm font-medium text-slate-300">
                 Nome <span className="text-red-400">*</span>
               </label>
               <input
@@ -189,8 +178,7 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
               />
             </div>
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-300">
-                <Phone className="h-4 w-4 text-slate-500" />
+              <label className="mb-1.5 block text-sm font-medium text-slate-300">
                 Telefone <span className="text-red-400">*</span>
               </label>
               <input
@@ -203,8 +191,7 @@ export function ReservationCalendar({ limitPerSlot, closedDates }: ReservationCa
               />
             </div>
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-300">
-                <MessageSquare className="h-4 w-4 text-slate-500" />
+              <label className="mb-1.5 block text-sm font-medium text-slate-300">
                 Observação
               </label>
               <textarea

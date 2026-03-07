@@ -8,7 +8,7 @@ export default async function ReservasPage() {
   const closedDates = closedDatesList.map((d) => d.date);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <div className="mx-auto max-w-[90rem] px-4 py-8">
       <header className="mb-2">
         <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
           Calendário de reservas

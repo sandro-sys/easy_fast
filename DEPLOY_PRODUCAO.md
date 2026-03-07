@@ -108,7 +108,9 @@ Você vai usar esses dois valores na Vercel na etapa 3.
 
 Isso cria as tabelas `reservations`, `settings`, `closed_dates` e `plans`, com permissões (RLS) para usuários autenticados.
 
-**Empresas e painel master (opcional):** Se quiser cadastro de empresas e painel admin, no SQL Editor execute também o conteúdo de **`supabase/schema-companies.sql`** (cria tabela `companies`, coluna `company_id` em reservas e função para o usuário master).
+**Empresas e painel master (opcional):** Se quiser cadastro de empresas e painel admin, no SQL Editor execute também o conteúdo de **`supabase/schema-companies.sql`**.
+
+**Horários por dia da semana e exceções (opcional):** Para configurar dias de abertura e horário por dia em Configurações, execute **`supabase/schema-hours.sql`** (cria tabela `date_hour_overrides` para horários específicos por data).
 
 ### 2.4 Autenticação por e-mail
 
