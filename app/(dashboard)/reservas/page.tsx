@@ -1,4 +1,4 @@
-import { getSettings, getClosedDates } from "@/app/actions/settings";
+import { getSettings, getClosedDates, getWeeklyHours, getDateHourOverrides } from "@/app/actions/settings";
 import { getMyCompany } from "@/app/actions/companies";
 import { ReservationCalendar } from "@/components/ReservationCalendar";
 
@@ -9,6 +9,8 @@ export default async function ReservasPage() {
   const closedDates = closedDatesList.map((d) => d.date);
   const company = await getMyCompany();
   const companyWhatsapp = company?.whatsapp_number ?? null;
+  const weeklyHours = await getWeeklyHours();
+  const dateHourOverrides = await getDateHourOverrides();
 
   return (
     <div className="mx-auto max-w-[90rem] px-4 py-8">
@@ -24,6 +26,8 @@ export default async function ReservasPage() {
         limitPerSlot={limit}
         closedDates={closedDates}
         companyWhatsapp={companyWhatsapp}
+        weeklyHours={weeklyHours}
+        dateHourOverrides={dateHourOverrides}
       />
     </div>
   );

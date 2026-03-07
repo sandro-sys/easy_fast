@@ -8,9 +8,8 @@ import "react-day-picker/style.css";
 import { createReservation } from "@/app/actions/reservations";
 import { WhatsAppModal } from "./WhatsAppModal";
 import { ReservationsList } from "./ReservationsList";
+import type { WeeklyHours } from "@/app/actions/settings";
 
-const DEFAULT_OPEN = "12:00";
-const DEFAULT_CLOSE = "23:00";
 const SLOT_MINUTES = 30;
 
 function generateTimeSlots(open: string, close: string): string[] {
@@ -30,13 +29,23 @@ function generateTimeSlots(open: string, close: string): string[] {
   return slots;
 }
 
+type DateHourOverride = { date: string; open_time: string; close_time: string };
+
 interface ReservationCalendarProps {
   limitPerSlot: number;
   closedDates: string[];
   companyWhatsapp?: string | null;
+  weeklyHours?: WeeklyHours;
+  dateHourOverrides?: DateHourOverride[];
 }
 
-export function ReservationCalendar({ limitPerSlot, closedDates, companyWhatsapp }: ReservationCalendarProps) {
+export function ReservationCalendar({
+  limitPerSlot,
+  closedDates,
+  companyWhatsapp,
+  weeklyHours = {},
+  dateHourOverrides = [],
+}: ReservationCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [guestName, setGuestName] = useState("");
@@ -53,19 +62,35 @@ export function ReservationCalendar({ limitPerSlot, closedDates, companyWhatsapp
     observation: string | null;
   } | null>(null);
 
-  const slots = useMemo(
-    () => generateTimeSlots(DEFAULT_OPEN, DEFAULT_CLOSE),
-    []
-  );
-
   const closedSet = useMemo(() => new Set(closedDates), [closedDates]);
+  const overridesByDate = useMemo(() => {
+    const m = new Map<string, { open_time: string; close_time: string }>();
+    dateHourOverrides.forEach((o) => m.set(o.date, { open_time: o.open_time, close_time: o.close_time }));
+    return m;
+  }, [dateHourOverrides]);
+
+  const slots = useMemo(() => {
+    if (!selectedDate) return [];
+    const dateStr = format(selectedDate, "yyyy-MM-dd");
+    if (closedSet.has(dateStr)) return [];
+    const override = overridesByDate.get(dateStr);
+    if (override) return generateTimeSlots(override.open_time, override.close_time);
+    const dayOfWeek = selectedDate.getDay();
+    const dayHours = weeklyHours[String(dayOfWeek)];
+    if (!dayHours?.open || !dayHours?.close) return [];
+    return generateTimeSlots(dayHours.open, dayHours.close);
+  }, [selectedDate, closedSet, overridesByDate, weeklyHours]);
 
   const disabledDays = useMemo(
     () => [
       (date: Date) => isBefore(date, startOfDay(new Date())),
       (date: Date) => closedSet.has(format(date, "yyyy-MM-dd")),
+      (date: Date) => {
+        const dayHours = weeklyHours[String(date.getDay())];
+        return dayHours == null;
+      },
     ],
-    [closedSet]
+    [closedSet, weeklyHours]
   );
 
   async function handleSubmit(e: React.FormEvent) {
@@ -137,22 +162,26 @@ export function ReservationCalendar({ limitPerSlot, closedDates, companyWhatsapp
                 Horário para {format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR })}
               </span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {slots.map((time) => (
-                <button
-                  key={time}
-                  type="button"
-                  onClick={() => setSelectedTime(time)}
-                  className={`min-w-[4rem] rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
-                    selectedTime === time
-                      ? "bg-[#32C76A] text-white"
-                      : "border border-white/15 bg-white/5 text-slate-200 hover:border-[#32C76A]/40 hover:bg-[#32C76A]/10"
-                  }`}
-                >
-                  {time}
-                </button>
-              ))}
-            </div>
+            {slots.length === 0 ? (
+              <p className="text-slate-400">Este dia está fechado ou não há horários configurados.</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {slots.map((time) => (
+                  <button
+                    key={time}
+                    type="button"
+                    onClick={() => setSelectedTime(time)}
+                    className={`min-w-[4rem] rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                      selectedTime === time
+                        ? "bg-[#32C76A] text-white"
+                        : "border border-white/15 bg-white/5 text-slate-200 hover:border-[#32C76A]/40 hover:bg-[#32C76A]/10"
+                    }`}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
