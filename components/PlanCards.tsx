@@ -9,6 +9,7 @@ interface Plan {
   name: string;
   description: string | null;
   price_cents: number | null;
+  price_original_cents?: number | null;
   features: string[];
   featuresExcluded?: string[];
   active: boolean;
@@ -99,10 +100,27 @@ export function PlanCards({ plans }: PlanCardsProps) {
                     <p className="text-sm text-slate-400">14 dias grátis</p>
                   </>
                 ) : plan.price_cents != null ? (
-                  <p className="text-2xl font-bold text-white">
-                    R$ {(plan.price_cents / 100).toFixed(2).replace(".", ",")}
-                    <span className="text-sm font-normal text-slate-400">/mês</span>
-                  </p>
+                  <>
+                    {plan.price_original_cents != null && plan.price_original_cents > plan.price_cents && (
+                      <div className="mb-1 flex flex-wrap items-center gap-2">
+                        <span className="text-sm text-slate-500 line-through">
+                          R$ {(plan.price_original_cents / 100).toFixed(2).replace(".", ",")}
+                        </span>
+                        <span className="text-xs font-medium text-slate-400">
+                          -{Math.round(((plan.price_original_cents - plan.price_cents) / plan.price_original_cents) * 100)}%
+                        </span>
+                      </div>
+                    )}
+                    <p className="text-2xl font-bold text-white">
+                      R$ {(plan.price_cents / 100).toFixed(2).replace(".", ",")}
+                      <span className="text-sm font-normal text-slate-400">/mês</span>
+                    </p>
+                    {plan.price_original_cents != null && plan.price_original_cents > plan.price_cents && (
+                      <p className="mt-1 text-sm text-slate-400">
+                        Economia de R$ {((plan.price_original_cents - plan.price_cents) / 100).toFixed(2).replace(".", ",")} por mês
+                      </p>
+                    )}
+                  </>
                 ) : (
                   <p className="text-lg font-semibold text-slate-300">Sob consulta</p>
                 )}

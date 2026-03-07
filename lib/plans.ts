@@ -8,6 +8,8 @@ export interface Plan {
   name: string;
   description: string | null;
   price_cents: number | null;
+  /** Preço original antes do desconto (exibido riscado). Opcional. */
+  price_original_cents?: number | null;
   features: string[];
   /** Itens não incluídos (exibidos com ícone x no card). Opcional. */
   featuresExcluded?: string[];
@@ -39,6 +41,7 @@ export const DEFAULT_PLANS: Plan[] = [
     name: "Basic",
     description: "Para pequenos negócios",
     price_cents: 4990,
+    price_original_cents: 7990,
     features: [
       "Reservas ilimitadas",
       "Mensagem para o cliente",
@@ -56,6 +59,7 @@ export const DEFAULT_PLANS: Plan[] = [
     name: "Pro",
     description: "Para empresas em crescimento",
     price_cents: 9990,
+    price_original_cents: 14990,
     features: [
       "Reservas ilimitadas",
       "Mensagem para o cliente",
