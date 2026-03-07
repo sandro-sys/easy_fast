@@ -23,6 +23,8 @@ export async function createCompany(data: CompanyInput) {
     address: data.address.trim() || null,
     whatsapp_number: data.whatsapp_number.replace(/\D/g, "").slice(0, 20) || null,
     owner_id: user.id,
+    owner_email: user.email ?? null,
+    plan_slug: "trial",
   });
 
   if (error) return { error: error.message };
@@ -54,6 +56,8 @@ export type CompanyWithMetrics = {
   address: string | null;
   whatsapp_number: string | null;
   owner_id: string;
+  owner_email: string | null;
+  plan_slug: string;
   created_at: string;
   reservation_count: number;
 };
@@ -70,7 +74,7 @@ export async function getAdminMetrics(): Promise<{
 
   const { data: companies, error: errCompanies } = await supabase
     .from("companies")
-    .select("id, name, cnpj, address, whatsapp_number, owner_id, created_at")
+    .select("id, name, cnpj, address, whatsapp_number, owner_id, owner_email, plan_slug, created_at")
     .order("created_at", { ascending: false });
   if (errCompanies || !companies) return { companies: [], totalReservations: 0 };
 
@@ -89,9 +93,29 @@ export async function getAdminMetrics(): Promise<{
 
   const companiesWithMetrics: CompanyWithMetrics[] = companies.map((c) => ({
     ...c,
+    owner_email: (c as { owner_email?: string | null }).owner_email ?? null,
+    plan_slug: (c as { plan_slug?: string }).plan_slug ?? "trial",
     reservation_count: (countByCompanyId[c.id] ?? 0) + (countByOwnerId[c.owner_id] ?? 0),
   }));
   const totalReservations = companiesWithMetrics.reduce((s, c) => s + c.reservation_count, 0);
 
   return { companies: companiesWithMetrics, totalReservations };
+}
+
+/** Apenas master: alterar plano de uma empresa. */
+export async function updateCompanyPlan(companyId: string, planSlug: string): Promise<{ error: string | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase não configurado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || !isMasterUser(user.email)) return { error: "Não autorizado" };
+
+  const slug = ["trial", "basic", "pro"].includes(planSlug) ? planSlug : "trial";
+  const { error } = await supabase
+    .from("companies")
+    .update({ plan_slug: slug, updated_at: new Date().toISOString() })
+    .eq("id", companyId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/admin");
+  return { error: null };
 }

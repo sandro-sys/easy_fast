@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Zap, Crown, Check, X, Shield, Headphones, XCircle } from "lucide-react";
+import { Clock, Zap, Crown, Check, X, Shield, Headphones, RotateCcw } from "lucide-react";
 
 interface Plan {
   id: string;
@@ -19,12 +19,12 @@ interface PlanCardsProps {
 
 const PLAN_ACCENT = {
   trial: { icon: Clock, border: "border-slate-500/40", iconBg: "bg-slate-500/20", iconColor: "text-slate-400", button: "bg-[#404554] hover:bg-[#4d5564] text-white" },
-  starter: { icon: Zap, border: "border-[#32C76A]/60", iconBg: "bg-[#32C76A]/20", iconColor: "text-[#32C76A]", button: "bg-[#32C76A] hover:bg-[#2ab55d] text-white" },
-  pro: { icon: Crown, border: "border-[#F98F29]/60", iconBg: "bg-[#F98F29]/20", iconColor: "text-[#F98F29]", button: "bg-[#F98F29] hover:bg-[#e88220] text-white" },
+  basic: { icon: Zap, border: "border-[#32CD32]/70", iconBg: "bg-[#32CD32]/20", iconColor: "text-[#32CD32]", button: "bg-[#32CD32] hover:bg-[#2ab52b] text-white" },
+  pro: { icon: Crown, border: "border-[#FF8C00]/70", iconBg: "bg-[#FF8C00]/20", iconColor: "text-[#FF8C00]", button: "bg-[#FF8C00] hover:bg-[#e67e00] text-white" },
 } as const;
 
 function getAccent(planId: string) {
-  if (planId === "starter") return PLAN_ACCENT.starter;
+  if (planId === "basic" || planId === "starter") return PLAN_ACCENT.basic;
   if (planId === "pro") return PLAN_ACCENT.pro;
   return PLAN_ACCENT.trial;
 }
@@ -52,11 +52,11 @@ export function PlanCards({ plans }: PlanCardsProps) {
           return (
             <div
               key={plan.id}
-              className={`relative flex flex-col rounded-2xl border bg-[#22252a] p-6 ${accent.border}`}
+              className={`relative flex flex-col rounded-2xl border bg-[#1e242c] p-6 shadow-xl ${accent.border}`}
             >
               {isPro && (
-                <div className="absolute -top-3 right-4 rounded-full bg-[#F98F29] px-3 py-1 text-xs font-semibold text-white">
-                  Mais Popular
+                <div className="absolute -top-3 right-4 flex items-center gap-1 rounded-full bg-[#FF8C00] px-3 py-1 text-xs font-semibold text-white shadow">
+                  ★ Mais Popular
                 </div>
               )}
 
@@ -92,18 +92,18 @@ export function PlanCards({ plans }: PlanCardsProps) {
                 {plan.price_cents === 0 ? "Começar Trial Grátis" : "Assinar Agora"}
               </button>
 
-              <div className="mt-6 border-t border-slate-600/50 pt-5">
+              <div className="mt-6 border-t border-white/10 pt-5">
                 <p className="mb-3 text-sm font-medium text-slate-400">O que está incluído:</p>
                 <ul className="space-y-2.5">
                   {plan.features.map((f, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-slate-200">
-                      <Check className="h-4 w-4 shrink-0 text-[#32C76A]" />
+                      <Check className="h-4 w-4 shrink-0 text-[#32CD32]" />
                       {f}
                     </li>
                   ))}
                   {plan.featuresExcluded?.map((f, i) => (
                     <li key={`ex-${i}`} className="flex items-center gap-2 text-sm text-slate-500">
-                      <X className="h-4 w-4 shrink-0 text-slate-500" />
+                      <X className="h-4 w-4 shrink-0 text-red-400" />
                       {f}
                     </li>
                   ))}
@@ -114,10 +114,10 @@ export function PlanCards({ plans }: PlanCardsProps) {
         })}
       </div>
 
-      <footer className="mt-12 grid gap-6 border-t border-slate-600/50 pt-10 sm:grid-cols-3">
+      <footer className="mt-12 grid gap-6 border-t border-white/10 pt-10 sm:grid-cols-3">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-600/30">
-            <Shield className="h-5 w-5 text-slate-400" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#32CD32]/20">
+            <Shield className="h-5 w-5 text-[#32CD32]" />
           </div>
           <div>
             <p className="font-medium text-white">Pagamento Seguro</p>
@@ -125,8 +125,8 @@ export function PlanCards({ plans }: PlanCardsProps) {
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-600/30">
-            <Headphones className="h-5 w-5 text-slate-400" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#32CD32]/20">
+            <Headphones className="h-5 w-5 text-[#32CD32]" />
           </div>
           <div>
             <p className="font-medium text-white">Suporte Dedicado</p>
@@ -134,8 +134,8 @@ export function PlanCards({ plans }: PlanCardsProps) {
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-600/30">
-            <XCircle className="h-5 w-5 text-slate-400" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#32CD32]/20">
+            <RotateCcw className="h-5 w-5 text-[#32CD32]" />
           </div>
           <div>
             <p className="font-medium text-white">Cancele Quando Quiser</p>
