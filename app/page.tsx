@@ -1,7 +1,14 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { APP_NAME, APP_TAGLINE } from "@/lib/app-config";
+import { PlanCards } from "@/components/PlanCards";
+import { DEFAULT_PLANS } from "@/lib/plans";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient();
+  const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  const isLoggedIn = !!user;
+
   return (
     <div className="mx-auto flex max-w-4xl flex-1 flex-col items-center justify-center px-4 py-16">
       <div className="text-center">
@@ -15,18 +22,49 @@ export default function HomePage() {
         </p>
       </div>
       <div className="mt-10 flex flex-wrap justify-center gap-4">
-        <Link
-          href="/login"
-          className="rounded-xl bg-[#32C76A] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#2ab55d]"
-        >
-          Entrar
-        </Link>
-        <Link
-          href="/reservas"
-          className="rounded-xl border-2 border-[#32C76A] bg-transparent px-6 py-3 text-base font-medium text-[#32C76A] transition-colors hover:bg-[#32C76A]/10"
-        >
-          Ver calendário
-        </Link>
+        {isLoggedIn ? (
+          <>
+            <Link
+              href="/reservas"
+              className="rounded-xl bg-[#32C76A] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#2ab55d]"
+            >
+              Ir ao Calendário
+            </Link>
+            <Link
+              href="/planos"
+              className="rounded-xl border-2 border-[#32C76A] bg-transparent px-6 py-3 text-base font-medium text-[#32C76A] transition-colors hover:bg-[#32C76A]/10"
+            >
+              Ver planos
+            </Link>
+            <Link
+              href="/dashboard"
+              className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-base font-medium text-slate-300 transition-colors hover:bg-white/10"
+            >
+              Dashboard
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link
+              href="/login"
+              className="rounded-xl bg-[#32C76A] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#2ab55d]"
+            >
+              Entrar
+            </Link>
+            <Link
+              href="/reservas"
+              className="rounded-xl border-2 border-[#32C76A] bg-transparent px-6 py-3 text-base font-medium text-[#32C76A] transition-colors hover:bg-[#32C76A]/10"
+            >
+              Ver calendário
+            </Link>
+            <Link
+              href="/planos"
+              className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-base font-medium text-slate-300 transition-colors hover:bg-white/10"
+            >
+              Planos
+            </Link>
+          </>
+        )}
       </div>
       <div className="mt-16 grid gap-6 text-center sm:grid-cols-2 lg:grid-cols-4">
         <div className="card max-w-[280px]">
@@ -54,6 +92,16 @@ export default function HomePage() {
           </p>
         </div>
       </div>
+
+      <section className="mt-20 w-full max-w-6xl">
+        <h2 className="text-center text-2xl font-bold text-white md:text-3xl">
+          Escolha o plano ideal para seu negócio
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-slate-400">
+          Comece gratuitamente e escale conforme sua empresa cresce.
+        </p>
+        <PlanCards plans={DEFAULT_PLANS} />
+      </section>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Clock, Zap, Crown, Check, X, Shield, Headphones, RotateCcw } from "lucide-react";
+import { createCheckoutPreference } from "@/app/actions/mercadopago";
 
 interface Plan {
   id: string;
@@ -30,6 +32,22 @@ function getAccent(planId: string) {
 }
 
 export function PlanCards({ plans }: PlanCardsProps) {
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleAssinar(planId: string) {
+    if (planId !== "basic" && planId !== "pro") return;
+    setError(null);
+    setLoadingPlanId(planId);
+    const result = await createCheckoutPreference(planId);
+    setLoadingPlanId(null);
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    if (result.initPoint) window.location.href = result.initPoint;
+  }
+
   if (plans.length === 0) {
     return (
       <div className="rounded-xl border border-slate-600/40 bg-[#22252a] p-8 text-center">
@@ -43,6 +61,11 @@ export function PlanCards({ plans }: PlanCardsProps) {
 
   return (
     <div className="mt-8">
+      {error && (
+        <div className="mb-4 rounded-xl bg-red-500/15 px-4 py-3 text-sm text-red-400">
+          {error}
+        </div>
+      )}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => {
           const accent = getAccent(plan.id);
@@ -87,9 +110,21 @@ export function PlanCards({ plans }: PlanCardsProps) {
 
               <button
                 type="button"
-                className={`mt-6 w-full rounded-xl py-3 text-sm font-semibold transition ${accent.button}`}
+                disabled={loadingPlanId !== null}
+                onClick={() => {
+                  if (plan.price_cents === 0) {
+                    window.location.href = "/register";
+                    return;
+                  }
+                  handleAssinar(plan.id);
+                }}
+                className={`mt-6 w-full rounded-xl py-3 text-sm font-semibold transition disabled:opacity-50 ${accent.button}`}
               >
-                {plan.price_cents === 0 ? "Começar Trial Grátis" : "Assinar Agora"}
+                {plan.price_cents === 0
+                  ? "Começar Trial Grátis"
+                  : loadingPlanId === plan.id
+                    ? "Redirecionando…"
+                    : "Assinar Agora"}
               </button>
 
               <div className="mt-6 border-t border-white/10 pt-5">
