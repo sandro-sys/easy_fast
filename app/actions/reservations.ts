@@ -13,16 +13,23 @@ export async function createReservation(data: {
   reservation_date: string;
   reservation_time: string;
   status: ReservationStatus;
+  guest_count?: number;
 }) {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase não configurado" };
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Não autorizado" };
   const company = await getMyCompany();
+  const guestCount = Math.max(1, Number(data.guest_count) || 1);
 
   const { error } = await supabase.from("reservations").insert({
-    ...data,
+    guest_name: data.guest_name,
+    guest_phone: data.guest_phone,
     observation: data.observation || null,
+    reservation_date: data.reservation_date,
+    reservation_time: data.reservation_time,
+    status: data.status,
+    guest_count: guestCount,
     created_by: user.id,
     ...(company && { company_id: company.id }),
   });
@@ -54,6 +61,40 @@ export async function getReservationsByDate(date: string) {
     return list.filter((r) => r.created_by === user.id);
   }
   return list;
+}
+
+/** Reservas em um intervalo de datas (inclusive), com mesmo filtro de empresa/usuário. */
+export async function getReservationsByDateRange(dateFrom: string, dateTo: string) {
+  const supabase = await createClient();
+  if (!supabase) return [];
+  const { data: { user } } = await supabase.auth.getUser();
+  const company = await getMyCompany();
+  const { data, error } = await supabase
+    .from("reservations")
+    .select("*")
+    .gte("reservation_date", dateFrom)
+    .lte("reservation_date", dateTo)
+    .order("reservation_date", { ascending: true })
+    .order("reservation_time", { ascending: true });
+  if (error) return [];
+  const list = data ?? [];
+  if (company && user) {
+    return list.filter(
+      (r) => r.company_id === company.id || (r.company_id == null && r.created_by === user.id)
+    );
+  }
+  if (user) {
+    return list.filter((r) => r.created_by === user.id);
+  }
+  return list;
+}
+
+/** Soma de pessoas (guest_count) no dia, excluindo canceladas. */
+export async function getTotalPeopleForDate(date: string): Promise<number> {
+  const list = await getReservationsByDate(date);
+  return list
+    .filter((r) => r.status !== "cancelled")
+    .reduce((sum, r) => sum + (Number((r as { guest_count?: number }).guest_count) || 1), 0);
 }
 
 export async function updateReservationStatus(

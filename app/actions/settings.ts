@@ -28,6 +28,21 @@ export async function setReservationLimit(limit: number) {
   return { error: null };
 }
 
+export async function setMaxPeoplePerDay(max: number) {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase não configurado" };
+  const { error } = await supabase
+    .from("settings")
+    .upsert(
+      { key: "max_people_per_day", value: String(max), updated_at: new Date().toISOString() },
+      { onConflict: "key" }
+    );
+  if (error) return { error: error.message };
+  revalidatePath("/configuracoes");
+  revalidatePath("/reservas");
+  return { error: null };
+}
+
 export async function addClosedDate(date: string, reason: string) {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase não configurado" };

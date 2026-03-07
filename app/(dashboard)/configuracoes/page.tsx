@@ -1,10 +1,11 @@
-import { getSettings, setReservationLimit } from "@/app/actions/settings";
+import { getSettings, setReservationLimit, setMaxPeoplePerDay } from "@/app/actions/settings";
 import { SettingsForm } from "@/components/SettingsForm";
 import { OpeningHoursConfig } from "@/components/OpeningHoursConfig";
 
 export default async function ConfiguracoesPage() {
   const settings = await getSettings();
   const limit = Number(settings?.reservation_limit_per_slot ?? 10);
+  const maxPeoplePerDay = Number(settings?.max_people_per_day ?? 0);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -13,7 +14,12 @@ export default async function ConfiguracoesPage() {
         Limite de reservas, dias de abertura e horários de atendimento.
       </p>
       <div className="mt-6">
-        <SettingsForm initialLimit={limit} setReservationLimit={setReservationLimit} />
+        <SettingsForm
+          initialLimit={limit}
+          setReservationLimit={setReservationLimit}
+          initialMaxPeoplePerDay={maxPeoplePerDay}
+          setMaxPeoplePerDay={setMaxPeoplePerDay}
+        />
       </div>
       <div className="mt-8">
         <OpeningHoursConfig />

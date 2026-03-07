@@ -19,6 +19,7 @@ interface Reservation {
   status: string;
   attended: boolean | null;
   reminder_sent_at: string | null;
+  guest_count?: number;
 }
 
 interface ReservationsListProps {
@@ -93,6 +94,9 @@ export function ReservationsList({ selectedDate, onUpdate, refreshKey = 0 }: Res
                   <span className="font-medium text-slate-100">{r.guest_name}</span>
                   <span className="mx-2 text-slate-500">•</span>
                   <span className="text-slate-400">{r.reservation_time}</span>
+                  {(r.guest_count ?? 1) > 1 && (
+                    <span className="ml-2 text-slate-500">({r.guest_count} pessoas)</span>
+                  )}
                   {r.status === "pre" && (
                     <span className="ml-2 rounded bg-amber-500/20 px-1.5 py-0.5 text-xs text-amber-300">
                       Pré-reserva

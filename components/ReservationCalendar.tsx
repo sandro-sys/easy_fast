@@ -5,7 +5,7 @@ import { DayPicker } from "react-day-picker";
 import { format, isBefore, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import "react-day-picker/style.css";
-import { createReservation } from "@/app/actions/reservations";
+import { createReservation, getTotalPeopleForDate } from "@/app/actions/reservations";
 import { WhatsAppModal } from "./WhatsAppModal";
 import { ReservationsList } from "./ReservationsList";
 import type { WeeklyHours } from "@/app/actions/settings";
@@ -37,6 +37,7 @@ interface ReservationCalendarProps {
   companyWhatsapp?: string | null;
   weeklyHours?: WeeklyHours;
   dateHourOverrides?: DateHourOverride[];
+  maxPeoplePerDay?: number;
 }
 
 export function ReservationCalendar({
@@ -45,13 +46,20 @@ export function ReservationCalendar({
   companyWhatsapp,
   weeklyHours = {},
   dateHourOverrides = [],
+  maxPeoplePerDay = 0,
 }: ReservationCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
+  const [guestCount, setGuestCount] = useState(1);
   const [observation, setObservation] = useState("");
   const [isPreReservation, setIsPreReservation] = useState(false);
+  const [casaCheiaConfirm, setCasaCheiaConfirm] = useState<{
+    total: number;
+    limit: number;
+    guestCount: number;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successData, setSuccessData] = useState<{
@@ -93,17 +101,8 @@ export function ReservationCalendar({
     [closedSet, weeklyHours]
   );
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    if (!selectedDate || !selectedTime) {
-      setError("Selecione data e horário.");
-      return;
-    }
-    if (!guestName.trim() || !guestPhone.trim()) {
-      setError("Nome e telefone são obrigatórios.");
-      return;
-    }
+  async function doCreateReservation() {
+    if (!selectedDate || !selectedTime) return;
     setLoading(true);
     const result = await createReservation({
       guest_name: guestName.trim(),
@@ -112,6 +111,7 @@ export function ReservationCalendar({
       reservation_date: format(selectedDate, "yyyy-MM-dd"),
       reservation_time: selectedTime,
       status: isPreReservation ? "pre" : "confirmed",
+      guest_count: guestCount,
     });
     setLoading(false);
     if (result.error) {
@@ -127,8 +127,32 @@ export function ReservationCalendar({
     });
     setGuestName("");
     setGuestPhone("");
+    setGuestCount(1);
     setObservation("");
     setSelectedTime(null);
+    setCasaCheiaConfirm(null);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    if (!selectedDate || !selectedTime) {
+      setError("Selecione data e horário.");
+      return;
+    }
+    if (!guestName.trim() || !guestPhone.trim()) {
+      setError("Nome e telefone são obrigatórios.");
+      return;
+    }
+    const count = Math.max(1, guestCount);
+    if (maxPeoplePerDay > 0) {
+      const total = await getTotalPeopleForDate(format(selectedDate, "yyyy-MM-dd"));
+      if (total + count > maxPeoplePerDay) {
+        setCasaCheiaConfirm({ total, limit: maxPeoplePerDay, guestCount: count });
+        return;
+      }
+    }
+    await doCreateReservation();
   }
 
   const dateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : null;
@@ -222,6 +246,19 @@ export function ReservationCalendar({
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                Número de pessoas <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={99}
+                value={guestCount}
+                onChange={(e) => setGuestCount(Math.max(1, Number(e.target.value) || 1))}
+                className="input-field-modern w-24"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-300">
                 Observação
               </label>
               <textarea
@@ -281,6 +318,34 @@ export function ReservationCalendar({
           companyWhatsapp={companyWhatsapp ?? null}
           onClose={() => setSuccessData(null)}
         />
+      )}
+      {casaCheiaConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
+          <div className="card-soft max-w-md p-6">
+            <h3 className="text-lg font-semibold text-white">Casa cheia</h3>
+            <p className="mt-2 text-slate-300">
+              O limite do dia é {casaCheiaConfirm.limit} pessoas. Já há {casaCheiaConfirm.total} pessoas reservadas.
+              Esta reserva adiciona {casaCheiaConfirm.guestCount} pessoa(s). Deseja continuar mesmo assim?
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setCasaCheiaConfirm(null)}
+                className="rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/10"
+              >
+                Não
+              </button>
+              <button
+                type="button"
+                onClick={() => doCreateReservation()}
+                disabled={loading}
+                className="rounded-xl bg-[#32C76A] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#32C76A]/90 disabled:opacity-50"
+              >
+                Sim, continuar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

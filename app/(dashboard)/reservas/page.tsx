@@ -5,6 +5,7 @@ import { ReservationCalendar } from "@/components/ReservationCalendar";
 export default async function ReservasPage() {
   const settings = await getSettings();
   const limit = Number(settings?.reservation_limit_per_slot ?? 10);
+  const maxPeoplePerDay = Number(settings?.max_people_per_day ?? 0);
   const closedDatesList = await getClosedDates();
   const closedDates = closedDatesList.map((d) => d.date);
   const company = await getMyCompany();
@@ -28,6 +29,7 @@ export default async function ReservasPage() {
         companyWhatsapp={companyWhatsapp}
         weeklyHours={weeklyHours}
         dateHourOverrides={dateHourOverrides}
+        maxPeoplePerDay={maxPeoplePerDay}
       />
     </div>
   );

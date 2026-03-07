@@ -28,6 +28,9 @@ export function Header({ userEmail, isMaster, companyName }: HeaderProps) {
               <Link href="/configuracoes" className="text-sm font-medium text-slate-300 hover:text-[#32C76A] transition-colors">
                 Configurações
               </Link>
+              <Link href="/exportar" className="text-sm font-medium text-slate-300 hover:text-[#32C76A] transition-colors">
+                Exportar
+              </Link>
               {isMaster && (
                 <Link href="/admin" className="text-sm font-medium text-[#F98F29] hover:text-[#ffa347] transition-colors">
                   Painel master
