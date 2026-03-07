@@ -50,7 +50,5 @@ CREATE POLICY "companies_insert_own" ON public.companies FOR INSERT TO authentic
 CREATE POLICY "companies_update_own" ON public.companies FOR UPDATE TO authenticated USING (owner_id = auth.uid());
 CREATE POLICY "companies_delete_own" ON public.companies FOR DELETE TO authenticated USING (owner_id = auth.uid());
 
--- Policies existentes de reservations, settings, closed_dates continuam permitindo acesso;
--- o filtro por company_id será feito na aplicação para usuários com empresa.
--- (Opcional: criar políticas que restringem por company_id onde company_id = empresa do usuário.)
--- Para simplificar, mantemos as policies atuais e filtramos no app por company_id quando existir.
+-- Para políticas RLS restritivas (evitar avisos do Security Advisor), execute depois:
+--   supabase/fix-rls-policies.sql

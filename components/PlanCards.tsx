@@ -44,6 +44,7 @@ export function PlanCards({ plans }: PlanCardsProps) {
     setLoadingPlanId(null);
     if (result.error) {
       setError(result.error);
+      console.error("[Planos] Mercado Pago:", result.error);
       return;
     }
     if (result.initPoint) window.location.href = result.initPoint;
