@@ -27,5 +27,7 @@ export default async function DashboardLayout({
   const isMaster = isMasterUser(user.email);
   if (!company && !isMaster) redirect("/onboarding");
 
+  if (company && !company.approved && !isMaster) redirect("/aguardando-aprovacao");
+
   return <>{children}</>;
 }

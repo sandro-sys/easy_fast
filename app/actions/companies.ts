@@ -25,6 +25,7 @@ export async function createCompany(data: CompanyInput) {
     owner_id: user.id,
     owner_email: user.email ?? null,
     plan_slug: "trial",
+    approved: false,
   });
 
   if (error) return { error: error.message };
@@ -35,7 +36,12 @@ export async function createCompany(data: CompanyInput) {
   return { error: null };
 }
 
-export async function getMyCompany(): Promise<{ id: string; name: string; whatsapp_number?: string | null } | null> {
+export async function getMyCompany(): Promise<{
+  id: string;
+  name: string;
+  whatsapp_number?: string | null;
+  approved?: boolean;
+} | null> {
   const supabase = await createClient();
   if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
@@ -43,7 +49,7 @@ export async function getMyCompany(): Promise<{ id: string; name: string; whatsa
 
   const { data } = await supabase
     .from("companies")
-    .select("id, name, whatsapp_number")
+    .select("id, name, whatsapp_number, approved")
     .eq("owner_id", user.id)
     .single();
   return data ?? null;
@@ -60,6 +66,7 @@ export type CompanyWithMetrics = {
   plan_slug: string;
   created_at: string;
   reservation_count: number;
+  approved: boolean;
 };
 
 /** Apenas para usuário master: lista empresas e contagem de reservas. */
@@ -74,7 +81,7 @@ export async function getAdminMetrics(): Promise<{
 
   const { data: companies, error: errCompanies } = await supabase
     .from("companies")
-    .select("id, name, cnpj, address, whatsapp_number, owner_id, owner_email, plan_slug, created_at")
+    .select("id, name, cnpj, address, whatsapp_number, owner_id, owner_email, plan_slug, created_at, approved")
     .order("created_at", { ascending: false });
   if (errCompanies || !companies) return { companies: [], totalReservations: 0 };
 
@@ -96,26 +103,27 @@ export async function getAdminMetrics(): Promise<{
     owner_email: (c as { owner_email?: string | null }).owner_email ?? null,
     plan_slug: (c as { plan_slug?: string }).plan_slug ?? "trial",
     reservation_count: (countByCompanyId[c.id] ?? 0) + (countByOwnerId[c.owner_id] ?? 0),
+    approved: (c as { approved?: boolean }).approved ?? false,
   }));
   const totalReservations = companiesWithMetrics.reduce((s, c) => s + c.reservation_count, 0);
 
   return { companies: companiesWithMetrics, totalReservations };
 }
 
-/** Apenas master: alterar plano de uma empresa. */
-export async function updateCompanyPlan(companyId: string, planSlug: string): Promise<{ error: string | null }> {
+/** Apenas master: aprovar empresa para liberar uso do sistema. */
+export async function approveCompany(companyId: string): Promise<{ error: string | null }> {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase não configurado" };
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || !isMasterUser(user.email)) return { error: "Não autorizado" };
 
-  const slug = ["trial", "basic", "pro"].includes(planSlug) ? planSlug : "trial";
   const { error } = await supabase
     .from("companies")
-    .update({ plan_slug: slug, updated_at: new Date().toISOString() })
+    .update({ approved: true, updated_at: new Date().toISOString() })
     .eq("id", companyId);
 
   if (error) return { error: error.message };
   revalidatePath("/admin");
+  revalidatePath("/aguardando-aprovacao");
   return { error: null };
 }

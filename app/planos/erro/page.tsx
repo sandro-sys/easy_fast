@@ -8,10 +8,10 @@ export default function PlanosErroPage() {
         O pagamento foi recusado ou cancelado. Você pode tentar novamente quando quiser.
       </p>
       <Link
-        href="/planos"
+        href="/dashboard"
         className="mt-8 inline-block rounded-xl bg-[#32C76A] px-6 py-3 font-semibold text-white hover:bg-[#2ab55d]"
       >
-        Voltar aos planos
+        Ir ao dashboard
       </Link>
     </div>
   );

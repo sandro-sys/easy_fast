@@ -5,13 +5,14 @@ import type { DayHours, WeeklyHours } from "@/app/actions/settings";
 
 export type PublicCompany = { id: string; name: string };
 
-/** Lista empresas (restaurantes) para o cliente escolher na página pública. */
+/** Lista empresas aprovadas (restaurantes) para o cliente escolher na página pública. */
 export async function getPublicCompanies(): Promise<PublicCompany[]> {
   const supabase = createAdminClient();
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("companies")
     .select("id, name")
+    .eq("approved", true)
     .order("name");
   if (error) return [];
   return (data ?? []).map((r) => ({ id: r.id, name: r.name }));
@@ -44,8 +45,8 @@ function defaultWeeklyHours(): WeeklyHours {
   return h;
 }
 
-/** Configuração de dias/horários para a página pública (global; depois pode ser por company_id). */
-export async function getPublicBookingConfig(_companyId?: string): Promise<PublicBookingConfig> {
+/** Configuração de dias/horários da unidade (empresa) para a página pública. */
+export async function getPublicBookingConfig(companyId: string): Promise<PublicBookingConfig> {
   const supabase = createAdminClient();
   if (!supabase) {
     return {
@@ -57,16 +58,22 @@ export async function getPublicBookingConfig(_companyId?: string): Promise<Publi
     };
   }
 
-  const [settingsRes, closedRes, overridesRes] = await Promise.all([
-    supabase.from("settings").select("key, value"),
-    supabase.from("closed_dates").select("date"),
-    supabase.from("date_hour_overrides").select("date, open_time, close_time"),
+  const [companySettingsRes, closedRes, overridesRes] = await Promise.all([
+    supabase.from("company_settings").select("key, value").eq("company_id", companyId),
+    supabase.from("closed_dates").select("date").eq("company_id", companyId),
+    supabase.from("date_hour_overrides").select("date, open_time, close_time").eq("company_id", companyId),
   ]);
 
   const settings: Record<string, string> = {};
-  settingsRes.data?.forEach(({ key, value }) => {
+  companySettingsRes.data?.forEach(({ key, value }) => {
     if (value != null) settings[key] = String(value);
   });
+  if (Object.keys(settings).length === 0) {
+    const global = await supabase.from("settings").select("key, value");
+    global.data?.forEach(({ key, value }) => {
+      if (value != null) settings[key] = String(value);
+    });
+  }
   const closedDates = (closedRes.data ?? []).map((r) => (typeof r.date === "string" ? r.date : String(r.date)));
   const dateHourOverrides = (overridesRes.data ?? []).map((r) => ({
     date: typeof r.date === "string" ? r.date : String(r.date),

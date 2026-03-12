@@ -2,7 +2,7 @@ import { getAdminMetrics } from "@/app/actions/companies";
 import { Building2, Calendar, Phone, Users } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { AdminPlanSelect } from "@/components/AdminPlanSelect";
+import { AdminApproveButton } from "@/components/AdminApproveButton";
 
 export default async function AdminPage() {
   const metrics = await getAdminMetrics();
@@ -21,7 +21,7 @@ export default async function AdminPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-2xl font-bold text-white">Painel gerencial</h1>
       <p className="mt-1 text-slate-400">
-        Empresas, usuários cadastrados e ajuste de planos
+        Empresas e usuários cadastrados. Aprove acesso para liberar funcionalidades.
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -61,7 +61,7 @@ export default async function AdminPage() {
       </div>
 
       <div className="mt-8">
-        <h2 className="mb-4 text-lg font-semibold text-white">Empresas, responsáveis e planos</h2>
+        <h2 className="mb-4 text-lg font-semibold text-white">Empresas e responsáveis</h2>
         <div className="overflow-x-auto rounded-xl border border-white/10 bg-[#1e242c] shadow-lg">
           <table className="w-full text-left text-sm">
             <thead>
@@ -71,7 +71,7 @@ export default async function AdminPage() {
                 <th className="p-4 font-medium">CNPJ</th>
                 <th className="p-4 font-medium">WhatsApp</th>
                 <th className="p-4 font-medium">Reservas</th>
-                <th className="p-4 font-medium">Plano</th>
+                <th className="p-4 font-medium">Status</th>
                 <th className="p-4 font-medium">Cadastro</th>
               </tr>
             </thead>
@@ -109,7 +109,7 @@ export default async function AdminPage() {
                     </td>
                     <td className="p-4 text-white">{c.reservation_count}</td>
                     <td className="p-4">
-                      <AdminPlanSelect companyId={c.id} currentPlan={c.plan_slug} />
+                      <AdminApproveButton companyId={c.id} approved={c.approved} />
                     </td>
                     <td className="p-4 text-slate-400">
                       {format(new Date(c.created_at), "dd/MM/yyyy", { locale: ptBR })}
