@@ -17,6 +17,9 @@ export function Header({ userEmail, isMaster, companyName }: HeaderProps) {
           <span className="text-xs text-emerald-400/90 drop-shadow-[0_0_8px_rgba(16,185,129,0.35)]">{APP_TAGLINE}</span>
         </Link>
         <nav className="flex items-center gap-4">
+          <Link href="/reservar" className="text-sm font-medium text-slate-300 hover:text-[#32C76A] transition-colors">
+            Reservar
+          </Link>
           {userEmail ? (
             <>
               <Link href="/reservas" className="text-sm font-medium text-slate-300 hover:text-[#32C76A] transition-colors">
