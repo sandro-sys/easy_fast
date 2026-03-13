@@ -49,6 +49,8 @@ export async function getMyCompany(): Promise<{
   name: string;
   whatsapp_number?: string | null;
   approved?: boolean;
+  slug?: string | null;
+  cover_image_url?: string | null;
 } | null> {
   const supabase = await createClient();
   if (!supabase) return null;
