@@ -44,14 +44,16 @@ export async function createCompany(data: CompanyInput) {
   return { error: null };
 }
 
-export async function getMyCompany(): Promise<{
+export type GetMyCompanyResult = {
   id: string;
   name: string;
   whatsapp_number?: string | null;
   approved?: boolean;
   slug?: string | null;
   cover_image_url?: string | null;
-} | null> {
+};
+
+export async function getMyCompany(): Promise<GetMyCompanyResult | null> {
   const supabase = await createClient();
   if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
