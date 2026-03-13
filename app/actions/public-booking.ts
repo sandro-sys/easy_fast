@@ -1,5 +1,6 @@
 "use server";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { DayHours, WeeklyHours } from "@/app/actions/settings";
@@ -8,7 +9,7 @@ export type PublicCompany = { id: string; name: string };
 
 /** Lista empresas (restaurantes) para o cliente escolher na página pública. Tenta admin; se não houver SERVICE_ROLE_KEY, usa anon (requer policy companies_select_anon). */
 export async function getPublicCompanies(): Promise<PublicCompany[]> {
-  let supabase = createAdminClient();
+  let supabase: SupabaseClient | null = createAdminClient();
   if (!supabase) {
     supabase = await createClient();
   }
