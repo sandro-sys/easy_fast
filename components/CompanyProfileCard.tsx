@@ -87,16 +87,20 @@ export function CompanyProfileCard({ company }: { company: Company }) {
             </button>
           </div>
         ) : (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-slate-400">Nenhum link gerado.</span>
-            <button
-              type="button"
-              onClick={handleGenerateSlug}
-              disabled={saving}
-              className="rounded-lg bg-[#32C76A] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2ab55d] disabled:opacity-50"
-            >
-              Gerar link a partir do nome
-            </button>
+          <div className="space-y-2">
+            <p className="text-sm text-slate-300">
+              Para o link ter o <strong>nome do restaurante</strong> no final (ex: <code className="rounded bg-black/30 px-1">/reservar/feito-pizzas-e-massas</code>), gere o link abaixo.
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleGenerateSlug}
+                disabled={saving}
+                className="rounded-lg bg-[#32C76A] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2ab55d] disabled:opacity-50"
+              >
+                Gerar link com nome do restaurante
+              </button>
+            </div>
           </div>
         )}
       </div>

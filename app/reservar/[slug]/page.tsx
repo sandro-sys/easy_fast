@@ -1,7 +1,9 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getPublicCompanyForBooking } from "@/app/actions/public-booking";
 import { PublicBookingFlow } from "@/components/PublicBookingFlow";
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type Props = { params: { slug: string } };
 
@@ -17,6 +19,11 @@ export async function generateMetadata({ params }: Props) {
 export default async function ReservarRestaurantePage({ params }: Props) {
   const company = await getPublicCompanyForBooking(params.slug);
   if (!company) notFound();
+
+  // Se acessou com link antigo (UUID) e a empresa tem slug, redireciona para a URL com o nome
+  if (UUID_REGEX.test(params.slug) && company.slug) {
+    redirect(`/reservar/${company.slug}`);
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
