@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { createCompany, getMyCompany } from "@/app/actions/companies";
 import { APP_NAME, APP_TAGLINE } from "@/lib/app-config";
-import { Building2, MapPin, FileText, Phone } from "lucide-react";
+import { Building2, MapPin, FileText, Phone, Image } from "lucide-react";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function OnboardingPage() {
   const [cnpj, setCnpj] = useState("");
   const [address, setAddress] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -38,7 +39,13 @@ export default function OnboardingPage() {
       return;
     }
     setLoading(true);
-    const result = await createCompany({ name: name.trim(), cnpj, address, whatsapp_number: whatsapp });
+    const result = await createCompany({
+      name: name.trim(),
+      cnpj,
+      address,
+      whatsapp_number: whatsapp,
+      cover_image_url: coverImageUrl.trim() || undefined,
+    });
     setLoading(false);
     if (result.error) {
       setError(result.error);
@@ -126,6 +133,21 @@ export default function OnboardingPage() {
               className="input-field"
               placeholder="(00) 00000-0000"
             />
+          </div>
+          <div>
+            <label htmlFor="coverImageUrl" className="mb-1 flex items-center gap-2 text-sm font-medium text-slate-300">
+              <Image className="h-4 w-4 text-[#32C76A]" />
+              Foto de capa (URL)
+            </label>
+            <input
+              id="coverImageUrl"
+              type="url"
+              value={coverImageUrl}
+              onChange={(e) => setCoverImageUrl(e.target.value)}
+              className="input-field"
+              placeholder="https://... (opcional)"
+            />
+            <p className="mt-1 text-xs text-slate-500">Aparece na página de reserva do seu restaurante.</p>
           </div>
           {error && <p className="text-sm text-red-400">{error}</p>}
           <button

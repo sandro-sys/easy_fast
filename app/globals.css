@@ -134,3 +134,13 @@ body {
 .rdp-reservation .rdp-chevron {
   fill: #32C76A;
 }
+
+/* Calendário tema claro (página pública de reserva) */
+.rdp-reservation-light .rdp-month_caption { color: #1e293b; }
+.rdp-reservation-light .rdp-weekday { color: #64748b; }
+.rdp-reservation-light .rdp-day_button { color: #1e293b; }
+.rdp-reservation-light .rdp-day_button:hover:not(:disabled) { background-color: rgb(50 199 106 / 0.12); }
+.rdp-reservation-light .rdp-disabled .rdp-day_button { color: #cbd5e1; }
+.rdp-reservation-light .rdp-button_previous,
+.rdp-reservation-light .rdp-button_next { color: #32C76A; }
+.rdp-reservation-light .rdp-chevron { fill: #32C76A; }

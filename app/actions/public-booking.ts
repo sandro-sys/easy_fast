@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { DayHours, WeeklyHours } from "@/app/actions/settings";
 
-export type PublicCompany = { id: string; name: string };
+export type PublicCompany = { id: string; name: string; slug: string | null; cover_image_url: string | null };
 
 /** Lista empresas (restaurantes) para o cliente escolher na página pública. Tenta admin; se não houver SERVICE_ROLE_KEY, usa anon (requer policy companies_select_anon). */
 export async function getPublicCompanies(): Promise<PublicCompany[]> {
@@ -16,10 +16,57 @@ export async function getPublicCompanies(): Promise<PublicCompany[]> {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("companies")
-    .select("id, name")
+    .select("id, name, slug, cover_image_url")
     .order("name");
   if (error) return [];
-  return (data ?? []).map((r) => ({ id: r.id, name: r.name }));
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    name: r.name,
+    slug: (r as { slug?: string | null }).slug ?? null,
+    cover_image_url: (r as { cover_image_url?: string | null }).cover_image_url ?? null,
+  }));
+}
+
+/** Retorna empresa por slug para o link de reserva (/reservar/feito-coqueiros). Retorna null se não existir. */
+export async function getPublicCompanyBySlug(slug: string): Promise<PublicCompany | null> {
+  let supabase: SupabaseClient | null = createAdminClient();
+  if (!supabase) {
+    supabase = await createClient();
+  }
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("companies")
+    .select("id, name, slug, cover_image_url")
+    .eq("slug", slug)
+    .single();
+  if (error || !data) return null;
+  return {
+    id: data.id,
+    name: data.name,
+    slug: (data as { slug?: string | null }).slug ?? null,
+    cover_image_url: (data as { cover_image_url?: string | null }).cover_image_url ?? null,
+  };
+}
+
+/** Retorna empresa por ID (para compatibilidade e confirmação). */
+export async function getPublicCompanyForBooking(idOrSlug: string): Promise<PublicCompany | null> {
+  const bySlug = await getPublicCompanyBySlug(idOrSlug);
+  if (bySlug) return bySlug;
+  let supabase: SupabaseClient | null = createAdminClient();
+  if (!supabase) supabase = await createClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("companies")
+    .select("id, name, slug, cover_image_url")
+    .eq("id", idOrSlug)
+    .single();
+  if (error || !data) return null;
+  return {
+    id: data.id,
+    name: data.name,
+    slug: (data as { slug?: string | null }).slug ?? null,
+    cover_image_url: (data as { cover_image_url?: string | null }).cover_image_url ?? null,
+  };
 }
 
 /** Dados do restaurante para exibir na confirmação (nome, WhatsApp). */

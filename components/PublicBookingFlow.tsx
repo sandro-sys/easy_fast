@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { DayPicker } from "react-day-picker";
 import { format, isBefore, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import "react-day-picker/style.css";
+import { Calendar, Users, Clock, FileText } from "lucide-react";
 import {
   getPublicCompanies,
   getPublicBookingConfig,
@@ -33,10 +35,20 @@ function generateTimeSlots(open: string, close: string): string[] {
   return slots;
 }
 
-export function PublicBookingFlow() {
-  const [companies, setCompanies] = useState<PublicCompany[]>([]);
-  const [loadingCompanies, setLoadingCompanies] = useState(true);
-  const [selectedCompany, setSelectedCompany] = useState<PublicCompany | null>(null);
+const STEPS = [
+  { id: 1, label: "Data", icon: Calendar },
+  { id: 2, label: "Pessoas", icon: Users },
+  { id: 3, label: "Horário", icon: Clock },
+  { id: 4, label: "Seus dados", icon: FileText },
+];
+
+type PublicBookingFlowProps = { initialCompany?: PublicCompany };
+
+export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {}) {
+  const [companies, setCompanies] = useState<PublicCompany[]>(initialCompany ? [initialCompany] : []);
+  const [loadingCompanies, setLoadingCompanies] = useState(!initialCompany);
+  const [loadingConfig, setLoadingConfig] = useState(!!initialCompany);
+  const [selectedCompany, setSelectedCompany] = useState<PublicCompany | null>(initialCompany ?? null);
   const [config, setConfig] = useState<PublicBookingConfig | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -54,11 +66,19 @@ export function PublicBookingFlow() {
   } | null>(null);
 
   useEffect(() => {
+    if (initialCompany) {
+      setLoadingConfig(true);
+      getPublicBookingConfig(initialCompany.id).then((c) => {
+        setConfig(c);
+        setLoadingConfig(false);
+      });
+      return;
+    }
     getPublicCompanies().then((list) => {
       setCompanies(list);
       setLoadingCompanies(false);
     });
-  }, []);
+  }, [initialCompany]);
 
   const handleSelectCompany = async (company: PublicCompany) => {
     setError("");
@@ -102,11 +122,13 @@ export function PublicBookingFlow() {
     [closedSet, config?.weeklyHours]
   );
 
+  const currentStep = !selectedDate ? 1 : !selectedTime ? 3 : 4;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!selectedCompany || !selectedDate || !selectedTime) {
-      setError("Selecione o restaurante, data e horário.");
+      setError("Selecione data e horário.");
       return;
     }
     if (!guestName.trim() || !guestPhone.trim()) {
@@ -142,18 +164,23 @@ export function PublicBookingFlow() {
     setSelectedTime(null);
   }
 
-  if (loadingCompanies) {
+  const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
+  const inputClass =
+    "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-800 placeholder-slate-400 focus:border-[#32C76A] focus:outline-none focus:ring-2 focus:ring-[#32C76A]/20";
+  const labelClass = "mb-1.5 block text-sm font-medium text-slate-700";
+
+  if (loadingCompanies || (initialCompany && loadingConfig)) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-slate-600/40 bg-[#1e242c] p-8 text-center">
-        <p className="text-slate-400">Carregando restaurantes…</p>
+      <div className={`mx-auto max-w-2xl ${cardClass} p-8 text-center`}>
+        <p className="text-slate-500">{initialCompany ? "Carregando…" : "Carregando restaurantes…"}</p>
       </div>
     );
   }
 
   if (companies.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-slate-600/40 bg-[#1e242c] p-8 text-center">
-        <p className="text-slate-400">Nenhum restaurante cadastrado no momento.</p>
+      <div className={`mx-auto max-w-2xl ${cardClass} p-8 text-center`}>
+        <p className="text-slate-500">Nenhum restaurante cadastrado no momento.</p>
       </div>
     );
   }
@@ -163,9 +190,9 @@ export function PublicBookingFlow() {
       ? `https://wa.me/55${success.whatsapp.replace(/\D/g, "")}`
       : null;
     return (
-      <div className="mx-auto max-w-md rounded-2xl border border-[#32C76A]/40 bg-[#1e242c] p-8 text-center">
-        <h2 className="text-xl font-semibold text-white">Reserva confirmada</h2>
-        <p className="mt-3 text-slate-300">
+      <div className="mx-auto max-w-md rounded-2xl border border-[#32C76A]/30 bg-white p-8 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-slate-800">Reserva confirmada</h2>
+        <p className="mt-3 text-slate-600">
           Sua reserva no <strong>{success.companyName}</strong> foi agendada para{" "}
           {format(new Date(success.reservation_date + "T12:00:00"), "EEEE, d 'de' MMMM", { locale: ptBR })} às{" "}
           {success.reservation_time}.
@@ -184,11 +211,14 @@ export function PublicBookingFlow() {
           type="button"
           onClick={() => {
             setSuccess(null);
-            setSelectedCompany(null);
-            setConfig(null);
             setSelectedDate(null);
+            setSelectedTime(null);
+            if (!initialCompany) {
+              setSelectedCompany(null);
+              setConfig(null);
+            }
           }}
-          className="mt-4 block w-full text-sm text-slate-400 hover:text-white"
+          className="mt-4 block w-full text-sm text-slate-500 hover:text-slate-700"
         >
           Fazer outra reserva
         </button>
@@ -197,19 +227,34 @@ export function PublicBookingFlow() {
   }
 
   if (!selectedCompany || !config) {
+    if (initialCompany) return null;
+    const reserveUrl = (c: PublicCompany) => `/reservar/${c.slug || c.id}`;
     return (
-      <div className="mx-auto max-w-2xl">
-        <h2 className="mb-4 text-center text-lg font-semibold text-white">Escolha o restaurante</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
+      <div className="mx-auto max-w-3xl">
+        <h2 className="mb-4 text-center text-lg font-semibold text-slate-800">Escolha o restaurante</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
           {companies.map((c) => (
-            <button
+            <Link
               key={c.id}
-              type="button"
-              onClick={() => handleSelectCompany(c)}
-              className="rounded-xl border border-slate-600/40 bg-[#1e242c] p-5 text-left font-medium text-white shadow-lg transition hover:border-[#32C76A]/50 hover:bg-[#252b33]"
+              href={reserveUrl(c)}
+              className="group block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#32C76A]/40 hover:shadow-md"
             >
-              {c.name}
-            </button>
+              <div className="relative h-32 overflow-hidden bg-slate-200">
+                {c.cover_image_url ? (
+                  <img
+                    src={c.cover_image_url}
+                    alt={c.name}
+                    className="h-full w-full object-cover transition group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-slate-400">{c.name}</div>
+                )}
+              </div>
+              <div className="p-4">
+                <span className="font-semibold text-slate-800 group-hover:text-[#32C76A]">{c.name}</span>
+                <p className="mt-1 text-sm text-slate-500">Reservar mesa →</p>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -219,26 +264,55 @@ export function PublicBookingFlow() {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <span className="text-slate-400">Restaurante:</span>
-        <span className="font-semibold text-white">{selectedCompany.name}</span>
-        <button
-          type="button"
-          onClick={() => {
-            setSelectedCompany(null);
-            setConfig(null);
-            setSelectedDate(null);
-            setSelectedTime(null);
-          }}
-          className="text-sm text-slate-400 underline hover:text-white"
-        >
-          Trocar
-        </button>
+        <span className="text-slate-500">Restaurante:</span>
+        <span className="font-semibold text-slate-800">{selectedCompany.name}</span>
+        {!initialCompany && (
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedCompany(null);
+              setConfig(null);
+              setSelectedDate(null);
+              setSelectedTime(null);
+            }}
+            className="text-sm text-slate-500 underline hover:text-slate-700"
+          >
+            Trocar
+          </button>
+        )}
+        {initialCompany && (
+          <Link href="/reservar" className="text-sm text-slate-500 underline hover:text-slate-700">
+            Ver outros restaurantes
+          </Link>
+        )}
+      </div>
+
+      {/* Indicador de passos */}
+      <div className="mb-8 flex flex-wrap items-center justify-center gap-2 text-sm">
+        {STEPS.map((step) => {
+          const Icon = step.icon;
+          const active = currentStep === step.id;
+          const done = currentStep > step.id;
+          return (
+            <span
+              key={step.id}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 ${
+                active ? "bg-[#32C76A] text-white" : done ? "bg-slate-200 text-slate-600" : "bg-slate-100 text-slate-400"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {step.label}
+            </span>
+          );
+        })}
       </div>
 
       <div className="mt-6 flex flex-col gap-8 lg:flex-row">
-        <div className="shrink-0 overflow-hidden rounded-xl border border-slate-600/40 bg-[#1e242c] p-5">
-          <div className="mb-4 border-b border-white/10 pb-3">
-            <span className="font-semibold text-white">Escolha a data</span>
+        {/* Passo 1: Data */}
+        <div className={`shrink-0 overflow-hidden ${cardClass}`}>
+          <div className="mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <Calendar className="h-5 w-5 text-[#32C76A]" />
+            <span className="font-semibold text-slate-800">1. Escolha a data</span>
           </div>
           <DayPicker
             mode="single"
@@ -249,29 +323,67 @@ export function PublicBookingFlow() {
             }}
             disabled={disabledDays}
             locale={ptBR}
-            className="rdp-reservation"
+            className="rdp-reservation rdp-reservation-light"
           />
         </div>
 
         <div className="flex flex-1 flex-col gap-6">
+          {/* Passo 2: Número de pessoas */}
+          <div className={cardClass}>
+            <div className="mb-3 flex items-center gap-2">
+              <Users className="h-5 w-5 text-[#32C76A]" />
+              <span className="font-semibold text-slate-800">2. Número de pessoas</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {[1, 2, 3, 4, 5, 6, 8, 10].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setGuestCount(n)}
+                  className={`min-w-[3rem] rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                    guestCount === n
+                      ? "bg-[#32C76A] text-white"
+                      : "border border-slate-200 bg-white text-slate-700 hover:border-[#32C76A]/40"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <input
+                type="number"
+                min={1}
+                max={99}
+                value={guestCount > 10 ? guestCount : ""}
+                onChange={(e) => setGuestCount(Math.max(1, Number(e.target.value) || 1))}
+                placeholder="Outro"
+                className="w-20 rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-[#32C76A] focus:outline-none"
+              />
+            </div>
+            <p className="mt-2 text-sm text-slate-500">{guestCount} {guestCount === 1 ? "pessoa" : "pessoas"}</p>
+          </div>
+
+          {/* Passo 3: Horário */}
           {selectedDate && (
-            <div className="rounded-xl border border-slate-600/40 bg-[#1e242c] p-5">
-              <span className="font-semibold text-white">
-                Horário para {format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR })}
-              </span>
+            <div className={cardClass}>
+              <div className="mb-3 flex items-center gap-2">
+                <Clock className="h-5 w-5 text-[#32C76A]" />
+                <span className="font-semibold text-slate-800">
+                  3. Horário para {format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR })}
+                </span>
+              </div>
               {slots.length === 0 ? (
-                <p className="mt-3 text-slate-400">Este dia está fechado ou não há horários configurados.</p>
+                <p className="text-slate-500">Este dia está fechado ou não há horários configurados.</p>
               ) : (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2">
                   {slots.map((time) => (
                     <button
                       key={time}
                       type="button"
                       onClick={() => setSelectedTime(time)}
-                      className={`min-w-[4rem] rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                      className={`min-w-[4rem] rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                         selectedTime === time
                           ? "bg-[#32C76A] text-white"
-                          : "border border-white/15 bg-white/5 text-slate-200 hover:border-[#32C76A]/40 hover:bg-[#32C76A]/10"
+                          : "border border-slate-200 bg-white text-slate-700 hover:border-[#32C76A]/40"
                       }`}
                     >
                       {time}
@@ -282,72 +394,62 @@ export function PublicBookingFlow() {
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="min-w-0 max-w-3xl rounded-xl border border-slate-600/40 bg-[#1e242c] p-6"
-          >
-            <h3 className="mb-4 border-b border-white/10 pb-4 text-lg font-semibold text-white">
-              Dados da reserva
-            </h3>
+          {/* Passo 4: Dados e observação */}
+          <form onSubmit={handleSubmit} className={`min-w-0 max-w-3xl ${cardClass}`}>
+            <div className="mb-4 flex items-center gap-2 border-b border-slate-100 pb-4">
+              <FileText className="h-5 w-5 text-[#32C76A]" />
+              <h3 className="text-lg font-semibold text-slate-800">4. Seus dados e observação</h3>
+            </div>
             <div className="space-y-5">
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">
-                  Nome <span className="text-red-400">*</span>
+                <label className={labelClass}>
+                  Nome <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-slate-500 focus:border-[#32C76A]/50 focus:outline-none focus:ring-1 focus:ring-[#32C76A]/30"
+                  className={inputClass}
                   placeholder="Seu nome"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">
-                  Telefone <span className="text-red-400">*</span>
+                <label className={labelClass}>
+                  Telefone <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
                   value={guestPhone}
                   onChange={(e) => setGuestPhone(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-slate-500 focus:border-[#32C76A]/50 focus:outline-none focus:ring-1 focus:ring-[#32C76A]/30"
+                  className={inputClass}
                   placeholder="(00) 00000-0000"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">Número de pessoas</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={99}
-                  value={guestCount}
-                  onChange={(e) => setGuestCount(Math.max(1, Number(e.target.value) || 1))}
-                  className="w-24 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-white focus:border-[#32C76A]/50 focus:outline-none focus:ring-1 focus:ring-[#32C76A]/30"
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">Observação</label>
+                <label className={labelClass}>Alguma observação?</label>
                 <textarea
                   value={observation}
                   onChange={(e) => setObservation(e.target.value)}
-                  className="min-h-[88px] w-full resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-slate-500 focus:border-[#32C76A]/50 focus:outline-none focus:ring-1 focus:ring-[#32C76A]/30"
-                  placeholder="Ex.: mesa perto da janela..."
+                  className={`${inputClass} min-h-[88px] resize-y`}
+                  placeholder="Ex: data especial, restrições alimentares..."
                   rows={3}
+                  maxLength={300}
                 />
+                <p className="mt-1 text-right text-xs text-slate-400">{observation.length}/300</p>
               </div>
             </div>
             {error && (
-              <p className="mt-4 rounded-lg bg-red-500/15 px-4 py-2.5 text-sm text-red-400" role="alert">
+              <p className="mt-4 rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600" role="alert">
                 {error}
               </p>
             )}
             {!selectedDate && (
-              <p className="mt-4 text-sm text-amber-400/90">Selecione uma data no calendário.</p>
+              <p className="mt-4 text-sm text-amber-600">Selecione uma data no calendário.</p>
             )}
             {selectedDate && !selectedTime && (
-              <p className="mt-4 text-sm text-amber-400/90">Selecione um horário para ativar o botão.</p>
+              <p className="mt-4 text-sm text-amber-600">Selecione um horário.</p>
             )}
             <button
               type="submit"

@@ -1,0 +1,21 @@
+-- ============================================================
+-- Fila de espera (implementação posterior)
+-- Cadastro de interessados e aviso por WhatsApp quando houver vaga.
+-- Execute quando for implementar a funcionalidade.
+-- ============================================================
+
+-- CREATE TABLE IF NOT EXISTS public.waitlist (
+--   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+--   company_id uuid NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+--   guest_name text NOT NULL,
+--   guest_phone text NOT NULL,
+--   guest_count int NOT NULL DEFAULT 1,
+--   desired_date date,
+--   desired_time text,
+--   notified_at timestamptz,
+--   created_at timestamptz DEFAULT now()
+-- );
+-- CREATE INDEX IF NOT EXISTS idx_waitlist_company ON public.waitlist(company_id);
+-- CREATE INDEX IF NOT EXISTS idx_waitlist_notified ON public.waitlist(company_id, notified_at);
+-- ALTER TABLE public.waitlist ENABLE ROW LEVEL SECURITY;
+-- -- Políticas: dono da empresa vê/insere/atualiza apenas da própria empresa; anon pode inserir (cadastro na fila).

@@ -1,9 +1,11 @@
 import { getSettings, setReservationLimit, setMaxPeoplePerDay } from "@/app/actions/settings";
+import { getMyCompany } from "@/app/actions/companies";
 import { SettingsForm } from "@/components/SettingsForm";
 import { OpeningHoursConfig } from "@/components/OpeningHoursConfig";
+import { CompanyProfileCard } from "@/components/CompanyProfileCard";
 
 export default async function ConfiguracoesPage() {
-  const settings = await getSettings();
+  const [settings, company] = await Promise.all([getSettings(), getMyCompany()]);
   const limit = Number(settings?.reservation_limit_per_slot ?? 10);
   const maxPeoplePerDay = Number(settings?.max_people_per_day ?? 0);
 
@@ -24,6 +26,16 @@ export default async function ConfiguracoesPage() {
       <div className="mt-8">
         <OpeningHoursConfig />
       </div>
+      {company && (
+        <CompanyProfileCard
+          company={{
+            id: company.id,
+            name: company.name,
+            slug: company.slug ?? null,
+            cover_image_url: company.cover_image_url ?? null,
+          }}
+        />
+      )}
     </div>
   );
 }
