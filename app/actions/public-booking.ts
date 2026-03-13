@@ -1,18 +1,21 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import type { DayHours, WeeklyHours } from "@/app/actions/settings";
 
 export type PublicCompany = { id: string; name: string };
 
-/** Lista empresas aprovadas (restaurantes) para o cliente escolher na página pública. */
+/** Lista empresas (restaurantes) para o cliente escolher na página pública. Tenta admin; se não houver SERVICE_ROLE_KEY, usa anon (requer policy companies_select_anon). */
 export async function getPublicCompanies(): Promise<PublicCompany[]> {
-  const supabase = createAdminClient();
+  let supabase = createAdminClient();
+  if (!supabase) {
+    supabase = await createClient();
+  }
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("companies")
     .select("id, name")
-    .eq("approved", true)
     .order("name");
   if (error) return [];
   return (data ?? []).map((r) => ({ id: r.id, name: r.name }));
