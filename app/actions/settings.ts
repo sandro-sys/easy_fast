@@ -40,7 +40,7 @@ export async function setReservationLimit(limit: number) {
       .from("company_settings")
       .upsert(
         { company_id: company.id, ...payload },
-        { onConflict: ["company_id", "key"] }
+        { onConflict: "company_id,key" }
       );
     if (error) return { error: error.message };
   } else {
@@ -68,7 +68,7 @@ export async function setMaxPeoplePerDay(max: number) {
       .from("company_settings")
       .upsert(
         { company_id: company.id, ...payload },
-        { onConflict: ["company_id", "key"] }
+        { onConflict: "company_id,key" }
       );
     if (error) return { error: error.message };
   } else {
@@ -193,7 +193,7 @@ export async function setWeeklyHours(hours: WeeklyHours) {
       .from("company_settings")
       .upsert(
         { company_id: company.id, ...payload },
-        { onConflict: ["company_id", "key"] }
+        { onConflict: "company_id,key" }
       );
     if (error) return { error: error.message };
   } else {
@@ -243,7 +243,7 @@ export async function addDateHourOverride(date: string, openTime: string, closeT
   if (company?.id) row.company_id = company.id;
   const { error } = await supabase
     .from("date_hour_overrides")
-    .upsert(row, { onConflict: ["company_id", "date"] });
+    .upsert(row, { onConflict: "company_id,date" });
   if (error) return { error: error.message };
   revalidatePath("/configuracoes");
   revalidatePath("/reservas");
