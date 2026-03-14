@@ -28,7 +28,7 @@ export function AdminApproveButton({ companyId, approved }: AdminApproveButtonPr
     <button
       type="button"
       onClick={handleApprove}
-      className="rounded-xl bg-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-400 hover:bg-amber-500/30"
+      className="rounded-xl bg-[#32C76A]/20 px-3 py-1.5 text-xs font-medium text-[#32C76A] hover:bg-[#32C76A]/30"
     >
       Aprovar acesso
     </button>

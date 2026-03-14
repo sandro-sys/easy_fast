@@ -119,7 +119,7 @@ export function WeekCalendarReservations({
                         <span className="ml-2 text-slate-500">({r.guest_count} pessoas)</span>
                       )}
                       {r.status === "pre" && (
-                        <span className="ml-2 rounded bg-amber-500/20 px-1.5 py-0.5 text-xs text-amber-300">
+                        <span className="ml-2 rounded bg-slate-500/20 px-1.5 py-0.5 text-xs text-slate-300">
                           Pré-reserva
                         </span>
                       )}

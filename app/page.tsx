@@ -13,8 +13,8 @@ export default async function HomePage() {
         <h1 className="text-3xl font-bold text-white md:text-4xl">
           {APP_NAME}
         </h1>
-        <p className="mt-2 text-sm text-slate-400">{APP_TAGLINE}</p>
-        <p className="mt-6 text-lg text-slate-300">
+        <p className="mt-2 text-sm text-[var(--text-muted)]">{APP_TAGLINE}</p>
+        <p className="mt-6 text-lg text-[var(--text)]">
           Gestão de reservas para seu restaurante. Calendário, limites e
           lembretes em um só lugar.
         </p>
@@ -24,7 +24,7 @@ export default async function HomePage() {
           <>
             <Link
               href="/reservas"
-              className="rounded-xl bg-[#32C76A] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#2ab55d]"
+              className="rounded-xl bg-[#32C76A] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[var(--primary-hover)]"
             >
               Ir ao Calendário
             </Link>
@@ -39,7 +39,7 @@ export default async function HomePage() {
           <>
             <Link
               href="/login"
-              className="rounded-xl bg-[#32C76A] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#2ab55d]"
+              className="rounded-xl bg-[#32C76A] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[var(--primary-hover)]"
             >
               Entrar
             </Link>

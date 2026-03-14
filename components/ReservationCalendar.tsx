@@ -288,12 +288,12 @@ export function ReservationCalendar({
           )}
 
           {!selectedDate && (
-            <p className="mt-4 text-sm text-amber-400/90">
+            <p className="mt-4 text-sm text-slate-400">
               Selecione uma data no calendário à esquerda.
             </p>
           )}
           {selectedDate && !selectedTime && (
-            <p className="mt-4 text-sm text-amber-400/90">
+            <p className="mt-4 text-sm text-slate-400">
               Selecione um horário na lista acima (ex.: 12:00, 12:30) para ativar o botão.
             </p>
           )}

@@ -9,10 +9,10 @@ interface WeeklyMetricsProps {
 export function WeeklyMetrics({ total, confirmed, pre, attended, noShow }: WeeklyMetricsProps) {
   const cards = [
     { label: "Total reservas", value: total, color: "bg-[#32C76A] text-white" },
-    { label: "Confirmadas", value: confirmed, color: "bg-emerald-600 text-white" },
-    { label: "Pré-reservas", value: pre, color: "bg-amber-500 text-white" },
-    { label: "Comparecimento", value: attended, color: "bg-blue-600 text-white" },
-    { label: "Não compareceram", value: noShow, color: "bg-slate-600 text-white" },
+    { label: "Confirmadas", value: confirmed, color: "bg-[#28a745] text-white" },
+    { label: "Pré-reservas", value: pre, color: "bg-slate-500 text-white" },
+    { label: "Comparecimento", value: attended, color: "bg-slate-600 text-white" },
+    { label: "Não compareceram", value: noShow, color: "bg-slate-700 text-white" },
   ];
 
   return (

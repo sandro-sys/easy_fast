@@ -25,7 +25,7 @@ export default async function AdminPage() {
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-white/10 bg-[#1e242c] p-4 shadow-lg">
+        <div className="rounded-xl border border-white/10 bg-[var(--bg-elevated)] p-4 shadow-lg">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#32C76A]/20">
               <Building2 className="h-6 w-6 text-[#32C76A]" />
@@ -36,10 +36,10 @@ export default async function AdminPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-white/10 bg-[#1e242c] p-4 shadow-lg">
+        <div className="rounded-xl border border-white/10 bg-[var(--bg-elevated)] p-4 shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F98F29]/20">
-              <Users className="h-6 w-6 text-[#F98F29]" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#32C76A]/20">
+              <Users className="h-6 w-6 text-[#32C76A]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{totalUsers}</p>
@@ -47,10 +47,10 @@ export default async function AdminPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-white/10 bg-[#1e242c] p-4 shadow-lg">
+        <div className="rounded-xl border border-white/10 bg-[var(--bg-elevated)] p-4 shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#3b82f6]/20">
-              <Calendar className="h-6 w-6 text-[#3b82f6]" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-500/20">
+              <Calendar className="h-6 w-6 text-slate-300" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{totalReservations}</p>
@@ -62,7 +62,7 @@ export default async function AdminPage() {
 
       <div className="mt-8">
         <h2 className="mb-4 text-lg font-semibold text-white">Empresas e responsáveis</h2>
-        <div className="overflow-x-auto rounded-xl border border-white/10 bg-[#1e242c] shadow-lg">
+        <div className="overflow-x-auto rounded-xl border border-white/10 bg-[var(--bg-elevated)] shadow-lg">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-white/10 text-slate-400">

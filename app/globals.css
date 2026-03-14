@@ -3,16 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --bg: #1B1D21;
-  --bg-elevated: #22252a;
-  --bg-nav: #171A1E;
+  --bg: #212529;
+  --bg-elevated: #2d3238;
+  --bg-nav: #1a1d21;
   --primary: #32C76A;
-  --primary-hover: #2ab55d;
-  --accent: #F98F29;
-  --accent-hover: #e88220;
-  --border: rgba(148, 163, 184, 0.15);
-  --text: #f1f5f9;
-  --text-muted: #94a3b8;
+  --primary-hover: #28a745;
+  --border: rgba(148, 163, 184, 0.2);
+  --text: #f8f9fa;
+  --text-muted: #adb5bd;
 }
 
 body {
@@ -31,12 +29,12 @@ body {
     background-color: var(--primary-hover);
   }
   .btn-accent {
-    background-color: var(--accent);
+    background-color: var(--primary);
     color: white;
     @apply font-medium py-2 px-4 rounded-xl transition-colors;
   }
   .btn-accent:hover {
-    background-color: var(--accent-hover);
+    background-color: var(--primary-hover);
   }
   .card {
     background-color: var(--bg-elevated);

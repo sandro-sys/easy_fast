@@ -98,7 +98,7 @@ export function ReservationsList({ selectedDate, onUpdate, refreshKey = 0 }: Res
                     <span className="ml-2 text-slate-500">({r.guest_count} pessoas)</span>
                   )}
                   {r.status === "pre" && (
-                    <span className="ml-2 rounded bg-amber-500/20 px-1.5 py-0.5 text-xs text-amber-300">
+                    <span className="ml-2 rounded bg-slate-500/20 px-1.5 py-0.5 text-xs text-slate-300">
                       Pré-reserva
                     </span>
                   )}
@@ -128,7 +128,7 @@ export function ReservationsList({ selectedDate, onUpdate, refreshKey = 0 }: Res
                       <button
                         type="button"
                         onClick={() => handleReminder(r.id)}
-                        className="rounded-lg bg-blue-500/20 px-2 py-1 text-xs font-medium text-blue-300 hover:bg-blue-500/30"
+                        className="rounded-lg bg-[#32C76A]/20 px-2 py-1 text-xs font-medium text-[#32C76A] hover:bg-[#32C76A]/30"
                       >
                         Lembrete WhatsApp
                       </button>

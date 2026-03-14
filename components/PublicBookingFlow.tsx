@@ -446,10 +446,10 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
               </p>
             )}
             {!selectedDate && (
-              <p className="mt-4 text-sm text-amber-600">Selecione uma data no calendário.</p>
+              <p className="mt-4 text-sm text-slate-600">Selecione uma data no calendário.</p>
             )}
             {selectedDate && !selectedTime && (
-              <p className="mt-4 text-sm text-amber-600">Selecione um horário.</p>
+              <p className="mt-4 text-sm text-slate-600">Selecione um horário.</p>
             )}
             <button
               type="submit"

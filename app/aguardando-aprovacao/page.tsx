@@ -31,9 +31,9 @@ export default async function AguardandoAprovacaoPage() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-16 text-center">
-      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-8">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/20">
-          <Clock className="h-7 w-7 text-amber-400" />
+      <div className="rounded-2xl border border-slate-500/30 bg-slate-500/10 p-8">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-500/20">
+          <Clock className="h-7 w-7 text-slate-300" />
         </div>
         <h1 className="text-xl font-bold text-white">Aguardando aprovação</h1>
         <p className="mt-3 text-slate-300">
