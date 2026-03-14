@@ -164,15 +164,15 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
     setSelectedTime(null);
   }
 
-  const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
+  const cardClass = "rounded-2xl border border-gray-200 bg-white p-5 shadow-sm";
   const inputClass =
-    "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-800 placeholder-slate-400 focus:border-[#32C76A] focus:outline-none focus:ring-2 focus:ring-[#32C76A]/20";
-  const labelClass = "mb-1.5 block text-sm font-medium text-slate-700";
+    "w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-[#32C76A] focus:outline-none focus:ring-2 focus:ring-[#32C76A]/20";
+  const labelClass = "mb-1.5 block text-sm font-medium text-gray-700";
 
   if (loadingCompanies || (initialCompany && loadingConfig)) {
     return (
       <div className={`mx-auto max-w-2xl ${cardClass} p-8 text-center`}>
-        <p className="text-slate-500">{initialCompany ? "Carregando…" : "Carregando restaurantes…"}</p>
+        <p className="text-gray-500">{initialCompany ? "Carregando…" : "Carregando restaurantes…"}</p>
       </div>
     );
   }
@@ -180,7 +180,7 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
   if (companies.length === 0) {
     return (
       <div className={`mx-auto max-w-2xl ${cardClass} p-8 text-center`}>
-        <p className="text-slate-500">Nenhum restaurante cadastrado no momento.</p>
+        <p className="text-gray-500">Nenhum restaurante cadastrado no momento.</p>
       </div>
     );
   }
@@ -191,8 +191,8 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
       : null;
     return (
       <div className="mx-auto max-w-md rounded-2xl border border-[#32C76A]/30 bg-white p-8 text-center shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-800">Reserva confirmada</h2>
-        <p className="mt-3 text-slate-600">
+        <h2 className="text-xl font-semibold text-gray-900">Reserva confirmada</h2>
+        <p className="mt-3 text-gray-600">
           Sua reserva no <strong>{success.companyName}</strong> foi agendada para{" "}
           {format(new Date(success.reservation_date + "T12:00:00"), "EEEE, d 'de' MMMM", { locale: ptBR })} às{" "}
           {success.reservation_time}.
@@ -218,7 +218,7 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
               setConfig(null);
             }
           }}
-          className="mt-4 block w-full text-sm text-slate-500 hover:text-slate-700"
+          className="mt-4 block w-full text-sm text-gray-500 hover:text-gray-700"
         >
           Fazer outra reserva
         </button>
@@ -231,15 +231,15 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
     const reserveUrl = (c: PublicCompany) => `/reservar/${c.slug || c.id}`;
     return (
       <div className="mx-auto max-w-3xl">
-        <h2 className="mb-4 text-center text-lg font-semibold text-slate-800">Escolha o restaurante</h2>
+        <h2 className="mb-4 text-center text-lg font-semibold text-gray-900">Escolha o restaurante</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {companies.map((c) => (
             <Link
               key={c.id}
               href={reserveUrl(c)}
-              className="group block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#32C76A]/40 hover:shadow-md"
+              className="group block overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:border-[#32C76A]/40 hover:shadow-md"
             >
-              <div className="relative h-32 overflow-hidden bg-slate-200">
+              <div className="relative h-32 overflow-hidden bg-gray-200">
                 {c.cover_image_url ? (
                   <img
                     src={c.cover_image_url}
@@ -247,12 +247,12 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
                     className="h-full w-full object-cover transition group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-slate-400">{c.name}</div>
+                  <div className="flex h-full items-center justify-center text-gray-500">{c.name}</div>
                 )}
               </div>
               <div className="p-4">
-                <span className="font-semibold text-slate-800 group-hover:text-[#32C76A]">{c.name}</span>
-                <p className="mt-1 text-sm text-slate-500">Reservar mesa →</p>
+                <span className="font-semibold text-gray-900 group-hover:text-[#32C76A]">{c.name}</span>
+                <p className="mt-1 text-sm text-gray-500">Reservar mesa →</p>
               </div>
             </Link>
           ))}
@@ -264,8 +264,8 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <span className="text-slate-500">Restaurante:</span>
-        <span className="font-semibold text-slate-800">{selectedCompany.name}</span>
+        <span className="text-gray-500">Restaurante:</span>
+        <span className="font-semibold text-gray-900">{selectedCompany.name}</span>
         {!initialCompany && (
           <button
             type="button"
@@ -275,13 +275,13 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
               setSelectedDate(null);
               setSelectedTime(null);
             }}
-            className="text-sm text-slate-500 underline hover:text-slate-700"
+            className="text-sm text-gray-500 underline hover:text-gray-700"
           >
             Trocar
           </button>
         )}
         {initialCompany && (
-          <Link href="/reservar" className="text-sm text-slate-500 underline hover:text-slate-700">
+          <Link href="/reservar" className="text-sm font-medium text-[#32C76A] hover:text-[#28a745]">
             Ver outros restaurantes
           </Link>
         )}
@@ -297,7 +297,7 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
             <span
               key={step.id}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 ${
-                active ? "bg-[#32C76A] text-white" : done ? "bg-slate-200 text-slate-600" : "bg-slate-100 text-slate-400"
+                active ? "bg-[#32C76A] text-white" : done ? "bg-gray-200 text-gray-600" : "bg-gray-100 text-gray-400"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -310,9 +310,9 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
       <div className="mt-6 flex flex-col gap-8 lg:flex-row">
         {/* Passo 1: Data */}
         <div className={`shrink-0 overflow-hidden ${cardClass}`}>
-          <div className="mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+          <div className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
             <Calendar className="h-5 w-5 text-[#32C76A]" />
-            <span className="font-semibold text-slate-800">1. Escolha a data</span>
+            <span className="font-semibold text-gray-900">1. Escolha a data</span>
           </div>
           <DayPicker
             mode="single"
@@ -332,7 +332,7 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
           <div className={cardClass}>
             <div className="mb-3 flex items-center gap-2">
               <Users className="h-5 w-5 text-[#32C76A]" />
-              <span className="font-semibold text-slate-800">2. Número de pessoas</span>
+              <span className="font-semibold text-gray-900">2. Número de pessoas</span>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {[1, 2, 3, 4, 5, 6, 8, 10].map((n) => (
@@ -343,7 +343,7 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
                   className={`min-w-[3rem] rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                     guestCount === n
                       ? "bg-[#32C76A] text-white"
-                      : "border border-slate-200 bg-white text-slate-700 hover:border-[#32C76A]/40"
+                      : "border border-gray-200 bg-white text-gray-700 hover:border-[#32C76A]/40"
                   }`}
                 >
                   {n}
@@ -356,10 +356,10 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
                 value={guestCount > 10 ? guestCount : ""}
                 onChange={(e) => setGuestCount(Math.max(1, Number(e.target.value) || 1))}
                 placeholder="Outro"
-                className="w-20 rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-[#32C76A] focus:outline-none"
+                className="w-20 rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-[#32C76A] focus:outline-none"
               />
             </div>
-            <p className="mt-2 text-sm text-slate-500">{guestCount} {guestCount === 1 ? "pessoa" : "pessoas"}</p>
+            <p className="mt-2 text-sm text-gray-500">{guestCount} {guestCount === 1 ? "pessoa" : "pessoas"}</p>
           </div>
 
           {/* Passo 3: Horário */}
@@ -367,12 +367,12 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
             <div className={cardClass}>
               <div className="mb-3 flex items-center gap-2">
                 <Clock className="h-5 w-5 text-[#32C76A]" />
-                <span className="font-semibold text-slate-800">
+                <span className="font-semibold text-gray-900">
                   3. Horário para {format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR })}
                 </span>
               </div>
               {slots.length === 0 ? (
-                <p className="text-slate-500">Este dia está fechado ou não há horários configurados.</p>
+                <p className="text-gray-500">Este dia está fechado ou não há horários configurados.</p>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {slots.map((time) => (
@@ -383,7 +383,7 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
                       className={`min-w-[4rem] rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                         selectedTime === time
                           ? "bg-[#32C76A] text-white"
-                          : "border border-slate-200 bg-white text-slate-700 hover:border-[#32C76A]/40"
+                          : "border border-gray-200 bg-white text-gray-700 hover:border-[#32C76A]/40"
                       }`}
                     >
                       {time}
@@ -396,9 +396,9 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
 
           {/* Passo 4: Dados e observação */}
           <form onSubmit={handleSubmit} className={`min-w-0 max-w-3xl ${cardClass}`}>
-            <div className="mb-4 flex items-center gap-2 border-b border-slate-100 pb-4">
+            <div className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-4">
               <FileText className="h-5 w-5 text-[#32C76A]" />
-              <h3 className="text-lg font-semibold text-slate-800">4. Seus dados e observação</h3>
+              <h3 className="text-lg font-semibold text-gray-900">4. Seus dados e observação</h3>
             </div>
             <div className="space-y-5">
               <div>
@@ -437,7 +437,7 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
                   rows={3}
                   maxLength={300}
                 />
-                <p className="mt-1 text-right text-xs text-slate-400">{observation.length}/300</p>
+                <p className="mt-1 text-right text-xs text-gray-500">{observation.length}/300</p>
               </div>
             </div>
             {error && (
@@ -446,10 +446,10 @@ export function PublicBookingFlow({ initialCompany }: PublicBookingFlowProps = {
               </p>
             )}
             {!selectedDate && (
-              <p className="mt-4 text-sm text-slate-600">Selecione uma data no calendário.</p>
+              <p className="mt-4 text-sm text-gray-600">Selecione uma data no calendário.</p>
             )}
             {selectedDate && !selectedTime && (
-              <p className="mt-4 text-sm text-slate-600">Selecione um horário.</p>
+              <p className="mt-4 text-sm text-gray-600">Selecione um horário.</p>
             )}
             <button
               type="submit"

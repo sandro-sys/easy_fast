@@ -108,10 +108,11 @@ export function OpeningHoursConfig() {
         </p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+          <div className="min-w-[280px] rounded-xl border border-white/10 bg-black/20 p-4">
             <p className="mb-3 text-sm font-medium text-slate-300">Calendário do mês</p>
             <DayPicker
               mode="single"
+              defaultMonth={new Date()}
               selected={undefined}
               onSelect={() => {}}
               locale={ptBR}

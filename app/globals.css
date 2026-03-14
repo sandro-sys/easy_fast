@@ -99,7 +99,11 @@ body {
   font-size: 0.75rem;
   font-weight: 600;
 }
+.rdp-reservation .rdp-day {
+  overflow: visible;
+}
 .rdp-reservation .rdp-day_button {
+  min-width: 2.5rem;
   transition: background-color 0.15s, color 0.15s;
   color: var(--text);
 }
@@ -133,12 +137,12 @@ body {
   fill: #32C76A;
 }
 
-/* Calendário tema claro (página pública de reserva) */
-.rdp-reservation-light .rdp-month_caption { color: #1e293b; }
-.rdp-reservation-light .rdp-weekday { color: #64748b; }
-.rdp-reservation-light .rdp-day_button { color: #1e293b; }
+/* Calendário tema claro (página pública de reserva) - preto, cinza, branco, verde */
+.rdp-reservation-light .rdp-month_caption { color: #111827; }
+.rdp-reservation-light .rdp-weekday { color: #6b7280; }
+.rdp-reservation-light .rdp-day_button { color: #111827; }
 .rdp-reservation-light .rdp-day_button:hover:not(:disabled) { background-color: rgb(50 199 106 / 0.12); }
-.rdp-reservation-light .rdp-disabled .rdp-day_button { color: #cbd5e1; }
+.rdp-reservation-light .rdp-disabled .rdp-day_button { color: #9ca3af; }
 .rdp-reservation-light .rdp-button_previous,
 .rdp-reservation-light .rdp-button_next { color: #32C76A; }
 .rdp-reservation-light .rdp-chevron { fill: #32C76A; }

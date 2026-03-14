@@ -26,32 +26,30 @@ export default async function ReservarRestaurantePage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Banner com foto do restaurante */}
-      <div className="relative h-48 w-full overflow-hidden bg-slate-200 md:h-64">
+    <div className="min-h-screen bg-white">
+      {/* Banner preto/cinza com nome do restaurante */}
+      <div className="relative h-44 w-full overflow-hidden bg-[#1a1d21] md:h-52">
         {company.cover_image_url ? (
-          <img
-            src={company.cover_image_url}
-            alt={company.name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-slate-300 text-slate-500">
-            <span className="text-sm">{company.name}</span>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{company.name}</h1>
-          <p className="mt-1 text-sm text-white/90">Reserve sua mesa</p>
+          <>
+            <img
+              src={company.cover_image_url}
+              alt={company.name}
+              className="h-full w-full object-cover opacity-60"
+            />
+            <div className="absolute inset-0 bg-[#1a1d21]/80" />
+          </>
+        ) : null}
+        <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6">
+          <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">{company.name}</h1>
+          <p className="mt-1 text-sm text-gray-300">Reserve sua mesa</p>
         </div>
       </div>
 
       <div className="mx-auto max-w-5xl px-4 py-8">
-        <div className="mb-4 flex items-center gap-2 text-sm text-slate-500">
-          <Link href="/reservar" className="hover:text-slate-700">Restaurantes</Link>
+        <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
+          <Link href="/reservar" className="hover:text-gray-800">Restaurantes</Link>
           <span>/</span>
-          <span className="text-slate-700">{company.name}</span>
+          <span className="text-gray-800">{company.name}</span>
         </div>
         <PublicBookingFlow initialCompany={company} />
       </div>
