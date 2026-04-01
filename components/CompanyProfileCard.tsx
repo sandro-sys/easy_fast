@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { updateCompanyProfile, ensureCompanySlug } from "@/app/actions/companies";
-import { Image, Link2, Copy, Check } from "lucide-react";
+import { Image, Link2, Copy, Check, ExternalLink } from "lucide-react";
 
 type Company = {
   id: string;
@@ -34,7 +34,7 @@ export function CompanyProfileCard({ company }: { company: Company }) {
       setMessage({ type: "error", text: res.error });
       return;
     }
-    setMessage({ type: "ok", text: "Salvo." });
+    setMessage({ type: "ok", text: "Salvo com sucesso." });
   }
 
   async function handleGenerateSlug() {
@@ -48,7 +48,7 @@ export function CompanyProfileCard({ company }: { company: Company }) {
     }
     if (res.slug) {
       setSlug(res.slug);
-      setMessage({ type: "ok", text: `Link gerado: /reservar/${res.slug}` });
+      setMessage({ type: "ok", text: "Link gerado com sucesso!" });
     }
     window.location.reload();
   }
@@ -67,48 +67,63 @@ export function CompanyProfileCard({ company }: { company: Company }) {
         Link e foto do restaurante
       </h2>
       <p className="mt-1 text-sm text-slate-400">
-        Seu link de reserva e a foto que aparece na página pública.
+        Compartilhe o link abaixo com seus clientes para que eles façam reservas online.
       </p>
 
-      <div className="mt-4">
-        <label className="mb-1 block text-sm font-medium text-slate-300">Link de reserva</label>
-        {reservePath ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-lg bg-black/30 px-2 py-1.5 text-sm text-slate-200">
+      {/* Destaque do link de reserva */}
+      <div className="mt-4 rounded-xl border border-[#32C76A]/30 bg-[#32C76A]/8 p-4" style={{ background: "rgba(50,199,106,0.08)" }}>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#32C76A]">
+          Seu link de reservas
+        </p>
+        {fullReserveUrl ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <code className="flex-1 break-all rounded-lg bg-black/30 px-3 py-2 text-sm font-medium text-white">
               {fullReserveUrl}
             </code>
-            <button
-              type="button"
-              onClick={copyLink}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-600/40 bg-slate-700/50 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-600/50"
-            >
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied ? "Copiado" : "Copiar"}
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-sm text-slate-300">
-              Para o link ter o <strong>nome do restaurante</strong> no final (ex: <code className="rounded bg-black/30 px-1">/reservar/feito-pizzas-e-massas</code>), gere o link abaixo.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex shrink-0 gap-2">
               <button
                 type="button"
-                onClick={handleGenerateSlug}
-                disabled={saving}
-                className="rounded-lg bg-[#32C76A] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2ab55d] disabled:opacity-50"
+                onClick={copyLink}
+                className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                style={{ background: "#32C76A" }}
               >
-                Gerar link com nome do restaurante
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copied ? "Copiado!" : "Copiar"}
               </button>
+              <a
+                href={reservePath ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-600/40 bg-slate-700/50 px-4 py-2 text-sm text-slate-200 transition hover:bg-slate-600/50"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Ver
+              </a>
             </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-slate-300">
+              Gere seu link personalizado com o nome do restaurante.
+            </p>
+            <button
+              type="button"
+              onClick={handleGenerateSlug}
+              disabled={saving}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+              style={{ background: "#32C76A" }}
+            >
+              {saving ? "Gerando…" : "Gerar link de reservas"}
+            </button>
           </div>
         )}
       </div>
 
+      {/* Slug customizado */}
       <div className="mt-5">
         <label htmlFor="profile-slug" className="mb-1 flex items-center gap-2 text-sm font-medium text-slate-300">
           <Link2 className="h-4 w-4" />
-          Slug do link (opcional)
+          Personalizar o link (opcional)
         </label>
         <input
           id="profile-slug"
@@ -116,15 +131,16 @@ export function CompanyProfileCard({ company }: { company: Company }) {
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
           className="input-field mt-1"
-          placeholder="ex: feito-coqueiros"
+          placeholder="ex: meu-restaurante"
         />
-        <p className="mt-1 text-xs text-slate-500">Só letras minúsculas, números e hífens. Gera automaticamente pelo nome se vazio.</p>
+        <p className="mt-1 text-xs text-slate-500">Só letras minúsculas, números e hífens.</p>
       </div>
 
+      {/* Foto de capa */}
       <div className="mt-5">
         <label htmlFor="profile-cover" className="mb-1 flex items-center gap-2 text-sm font-medium text-slate-300">
           <Image className="h-4 w-4" />
-          Foto de capa (URL)
+          Foto de capa (URL da imagem)
         </label>
         <input
           id="profile-cover"
@@ -152,7 +168,7 @@ export function CompanyProfileCard({ company }: { company: Company }) {
         disabled={saving}
         className="btn-primary mt-4"
       >
-        {saving ? "Salvando…" : "Salvar link e foto"}
+        {saving ? "Salvando…" : "Salvar alterações"}
       </button>
 
       <p className="mt-6 border-t border-slate-600/40 pt-4 text-xs text-slate-500">

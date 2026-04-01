@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { DayHours, WeeklyHours } from "@/app/actions/settings";
 
-export type PublicCompany = { id: string; name: string; slug: string | null; cover_image_url: string | null };
+export type PublicCompany = { id: string; name: string; slug: string | null; cover_image_url: string | null; address: string | null; whatsapp_number: string | null };
 
 /** Lista empresas (restaurantes) para o cliente escolher na página pública. Tenta admin; se não houver SERVICE_ROLE_KEY, usa anon (requer policy companies_select_anon). */
 export async function getPublicCompanies(): Promise<PublicCompany[]> {
@@ -16,7 +16,7 @@ export async function getPublicCompanies(): Promise<PublicCompany[]> {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("companies")
-    .select("id, name, slug, cover_image_url")
+    .select("id, name, slug, cover_image_url, address, whatsapp_number")
     .order("name");
   if (error) return [];
   return (data ?? []).map((r) => ({
@@ -24,6 +24,8 @@ export async function getPublicCompanies(): Promise<PublicCompany[]> {
     name: r.name,
     slug: (r as { slug?: string | null }).slug ?? null,
     cover_image_url: (r as { cover_image_url?: string | null }).cover_image_url ?? null,
+    address: (r as { address?: string | null }).address ?? null,
+    whatsapp_number: (r as { whatsapp_number?: string | null }).whatsapp_number ?? null,
   }));
 }
 
@@ -36,7 +38,7 @@ export async function getPublicCompanyBySlug(slug: string): Promise<PublicCompan
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("companies")
-    .select("id, name, slug, cover_image_url")
+    .select("id, name, slug, cover_image_url, address, whatsapp_number")
     .eq("slug", slug)
     .single();
   if (error || !data) return null;
@@ -45,6 +47,8 @@ export async function getPublicCompanyBySlug(slug: string): Promise<PublicCompan
     name: data.name,
     slug: (data as { slug?: string | null }).slug ?? null,
     cover_image_url: (data as { cover_image_url?: string | null }).cover_image_url ?? null,
+    address: (data as { address?: string | null }).address ?? null,
+    whatsapp_number: (data as { whatsapp_number?: string | null }).whatsapp_number ?? null,
   };
 }
 
@@ -57,7 +61,7 @@ export async function getPublicCompanyForBooking(idOrSlug: string): Promise<Publ
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("companies")
-    .select("id, name, slug, cover_image_url")
+    .select("id, name, slug, cover_image_url, address, whatsapp_number")
     .eq("id", idOrSlug)
     .single();
   if (error || !data) return null;
@@ -66,6 +70,8 @@ export async function getPublicCompanyForBooking(idOrSlug: string): Promise<Publ
     name: data.name,
     slug: (data as { slug?: string | null }).slug ?? null,
     cover_image_url: (data as { cover_image_url?: string | null }).cover_image_url ?? null,
+    address: (data as { address?: string | null }).address ?? null,
+    whatsapp_number: (data as { whatsapp_number?: string | null }).whatsapp_number ?? null,
   };
 }
 

@@ -44,10 +44,10 @@ export default async function HomePage() {
               Entrar
             </Link>
             <Link
-              href="/reservar"
+              href="/register"
               className="rounded-xl border-2 border-[#32C76A] bg-transparent px-6 py-3 text-base font-medium text-[#32C76A] transition-colors hover:bg-[#32C76A]/10"
             >
-              Fazer reserva
+              Criar conta
             </Link>
           </>
         )}
